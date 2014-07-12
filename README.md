@@ -269,15 +269,14 @@ Chainable.
 Testing
 -------
 
-Clone the repo and run:
+Tests require CoffeeScript. Install with `sudo npm install -g coffee-script`.
+
+Then clone the repo and run:
 
 ```
 > npm install
 > npm test
 ```
-
-> **Mediador** uses [**Washington**](https:github.com/xaviervia/washington)
-> for the tests, so you can see examples embedded in the code.
 
 License
 -------

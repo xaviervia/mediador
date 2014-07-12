@@ -4,7 +4,7 @@
   "description": "EventEmitter look alike built as a mixin, with and bulk listener setup support",
   "main": "mediador.js",
   "scripts": {
-    "test": "node spec.js"
+    "test": "coffee spec.coffee"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/xaviervia/mediador/issues"
   },
-  "dependencies": {
+  "devDependencies": {
     "washington": "~0.3.0"
   }
 }
