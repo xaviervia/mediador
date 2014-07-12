@@ -1,7 +1,7 @@
 {
   "name": "mediador",
   "version": "0.0.1",
-  "description": "EventEmitter look alike built for swiss inheritance and bulk listener setup",
+  "description": "EventEmitter look alike built as a mixin, with and bulk listener setup support",
   "main": "mediador.js",
   "scripts": {
     "test": "node spec.js"
