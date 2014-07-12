@@ -1,6 +1,6 @@
 {
   "name": "mediador",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "EventEmitter look alike built for swiss inheritance and bulk listener setup",
   "main": "mediador.js",
   "scripts": {
