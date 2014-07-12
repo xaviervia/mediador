@@ -149,8 +149,8 @@ behaviours that are useful only because they save you time.
 Remember:
 
 ```javascript
- You can name an anonymous function to call it from within
- You can totally do this:
+// You can name an anonymous function to call it from within
+// You can totally do this:
 mediador.on("fire", function notAnonymousAnymore() {
   mediador.off("fire", notAnonymousAnymore)
   console.log("The 'fire' event was called")
