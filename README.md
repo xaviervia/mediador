@@ -127,7 +127,7 @@ will be created if not present and used if present
 (without checking for the `listeners` type, which may have been written by
 another function). This is of course a question about namespace pollution.
 
-The thing is, there are several strategies to avoid name colision within an
+The thing is, there are several strategies to avoid name collision within an
 object, and most of them involve encapsulating the library specific data
 in a private data object or using some kind of namespace (such a as
 naming the property `mediator_listeners` or `_listeners`).
