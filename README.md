@@ -138,11 +138,11 @@ I don't favor this approach because:
 2. Will you gladly use a library that extends your object blindfolded and
    risk name collision anyways?
 
-In other words, I consider using a library _that extends your objects_ as a
-black box to be a poor desing choice. **Mediador** and other libraries of
+In other words, I consider that using lightly a library _that extends your
+objects_ is a poor design choice. **Mediador** and other libraries of
 its kind should be considered part of your design and taken for what they
-are: tested, encapsulated and standarized methods to achieve certain
-behaviors that are useful only because they save you time.
+are: tested, encapsulated and standardised methods to achieve certain
+behaviours that are useful only because they save you time.
 
 ### Why is there no `once` method?
 
