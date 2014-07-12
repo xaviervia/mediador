@@ -223,7 +223,7 @@ Fires all the listener callbacks associated with the `event`. Chainable.
 Mediador.prototype.off
 ----------------------
 
-### off(event, callback)
+### off( event, callback )
 
 Removes the `callback` function from the listener list to the `event`.
 Does nothing if the callback was not in the list.
