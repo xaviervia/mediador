@@ -1,4 +1,4 @@
-var Mediador     = require("../mediador")
+var Mediador     = require("mediador")
 var emitter      = {}
 
 emitter.on       = Mediador.prototype.on

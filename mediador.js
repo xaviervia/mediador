@@ -23,6 +23,8 @@
 // Bear this in mind in order to not override the property accidentally.
 //
 // You can find this examples in the [`examples`](examples) folder in this repo.
+// You can run them without installing `mediador` by running `npm link` on
+// the repo folder (may require sudo).
 //
 // ### Simple on/trigger
 //
