@@ -166,8 +166,8 @@ var spec     = require("washington")
 
 var Mediador = function () {}
 
-// Mediador.prototype.on( event, callback ) | on( eventHash )
-// ----------------------------------------------------------
+// Mediador.prototype.on
+// ---------------------
 //
 // ### on( event, callback )
 //
@@ -247,8 +247,10 @@ Mediador.prototype.on = function (event, callback) {
 
 }
 
-// Mediador.prototype.trigger( event, args )
-// -----------------------------------------
+// Mediador.prototype.trigger
+// --------------------------
+//
+// ### trigger( event, args )
 //
 // Fires all the listener callbacks associated with the `event`. Chainable.
 //
@@ -279,10 +281,10 @@ Mediador.prototype.trigger = function (event, args) {
 
 }
 
-// Mediador.prototype.off( event, callback ) | off( eventHash )
-// ------------------------------------------------------------
+// Mediador.prototype.off
+// ----------------------
 //
-// ### off(event, callback)
+// ### off( event, callback )
 //
 // Removes the `callback` function from the listener list to the `event`.
 // Does nothing if the callback was not in the list.
@@ -542,6 +544,7 @@ module.exports = Mediador
 // Clone the repo and run:
 //
 // ```
+// > npm install
 // > npm test
 // ```
 //

@@ -160,8 +160,8 @@ mediador.on("fire", function notAnonymousAnymore() {
 > Corollary: EventEmitter's `once` method is not needed. Keep your APIs
 > simple (KYAS?)
 
-Mediador.prototype.on( event, callback ) | on( eventHash )
-----------------------------------------------------------
+Mediador.prototype.on
+---------------------
 
 ### on( event, callback )
 
@@ -204,8 +204,10 @@ Chainable.
 
 - `Mediador` this
 
-Mediador.prototype.trigger( event, args )
------------------------------------------
+Mediador.prototype.trigger
+--------------------------
+
+### trigger( event, args )
 
 Fires all the listener callbacks associated with the `event`. Chainable.
 
@@ -218,8 +220,8 @@ Fires all the listener callbacks associated with the `event`. Chainable.
 
 - `Mediador` this
 
-Mediador.prototype.off( event, callback ) | off( eventHash )
-------------------------------------------------------------
+Mediador.prototype.off
+----------------------
 
 ### off(event, callback)
 
@@ -268,6 +270,7 @@ Testing
 Clone the repo and run:
 
 ```
+> npm install
 > npm test
 ```
 
