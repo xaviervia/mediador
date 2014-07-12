@@ -1,0 +1,27 @@
+{
+  "name": "mediador",
+  "version": "0.0.0",
+  "description": "EventEmitter look alike built for swiss inheritance and bulk listener setup",
+  "main": "mediador.js",
+  "scripts": {
+    "test": "node spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xaviervia/mediador"
+  },
+  "keywords": [
+    "event",
+    "eventemitter",
+    "listener",
+    "mediator"
+  ],
+  "author": "Xavier Via <fernando.via@gmail.com>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/xaviervia/mediador/issues"
+  },
+  "dependencies": {
+    "washington": "~0.3.0"
+  }
+}
