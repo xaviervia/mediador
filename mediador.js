@@ -3,7 +3,7 @@
 //
 // [ ![Codeship Status for xaviervia/mediador](https://codeship.io/projects/1b988be0-ebb2-0131-3c3b-4ebb653f9bc0/status)](https://codeship.io/projects/26547)
 //
-// EventEmitter look alike built for swiss inheritance and bulk listener setup.
+// EventEmitter look alike built as a mixin, with bulk listener setup support.
 //
 // Installation
 // ------------
