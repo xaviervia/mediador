@@ -24,6 +24,9 @@ Bear this in mind in order to not override the property accidentally.
 
 ### Simple on/trigger
 
+Trigger will map each element in the array as an argument to the listener
+function.
+
 ```javascript
 var Mediador = require("mediador")
 
@@ -40,7 +43,7 @@ yourInstance.on("event", function (you) {
 yourInstance.trigger("event", ["Me"])
 ```
 
-### Off with the event
+### Off with the listener
 
 ```javascript
 var Mediador = require("mediador")
@@ -58,7 +61,7 @@ var listener     = function (you) {
 yourInstance.on("event", listener)
 
 yourInstance.trigger("event", ["Me"])
-//
+
 yourInstance.off("event", listener)
 ```
 

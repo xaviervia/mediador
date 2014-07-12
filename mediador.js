@@ -24,6 +24,9 @@
 //
 // ### Simple on/trigger
 //
+// Trigger will map each element in the array as an argument to the listener
+// function. 
+//
 // ```javascript
 // var Mediador = require("mediador")
 //
@@ -40,7 +43,7 @@
 // yourInstance.trigger("event", ["Me"])
 // ```
 //
-// ### Off with the event
+// ### Off with the listener
 //
 // ```javascript
 // var Mediador = require("mediador")
