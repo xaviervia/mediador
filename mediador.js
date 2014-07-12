@@ -22,10 +22,12 @@
 // The events are stored in the `listeners` property within the emitter object.
 // Bear this in mind in order to not override the property accidentally.
 //
+// You can find this examples in the [`examples`](examples) folder in this repo.
+//
 // ### Simple on/trigger
 //
 // Trigger will map each element in the array as an argument to the listener
-// function. 
+// function.
 //
 // ```javascript
 // var Mediador = require("mediador")
