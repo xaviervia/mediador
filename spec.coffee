@@ -164,7 +164,7 @@ spec "Releases a full event hash when instructed", ->
 spec "Triggered listeners receive the emitter as the last argument", ->
 
   # The flags should all be true in the end
-  flags = [false, false, false]
+  flags = [false, false, false, false]
 
   # Define a function that inherits the "on", "off", and "trigger" methods
   # from Mediador. Mediador is built to support this type of multiple
@@ -194,10 +194,12 @@ spec "Triggered listeners receive the emitter as the last argument", ->
   heir.trigger "event", ["lala"]
   heir.trigger "event", []
   heir.trigger "event", [2, 32, true]
+  heir.trigger "event"
 
   # Assert the flags
   assert flags[0]
   assert flags[1]
   assert flags[2]
+  assert flags[3]
 
 spec.go()
