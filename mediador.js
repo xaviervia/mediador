@@ -273,10 +273,10 @@ Mediador.prototype.trigger = function (event, args) {
       this.listeners[event] instanceof Array)
 
       //! Iterate the listeners
-      this.listeners[event].forEach(function (listener) {
+      this.listeners[event].forEach((function (listener) {
 
         //! ...and run 'em!
-        listener.apply(null, args) })
+        listener.apply(null, args.concat([this])) }).bind(this))
 
   //! Return this for chainability
   return this

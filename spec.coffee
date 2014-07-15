@@ -161,5 +161,43 @@ spec "Releases a full event hash when instructed", ->
   assert.equal actionFlag, false
   assert.equal reactionFlag, false
 
+spec "Triggered listeners receive the emitter as the last argument", ->
+
+  # The flags should all be true in the end
+  flags = [false, false, false]
+
+  # Define a function that inherits the "on", "off", and "trigger" methods
+  # from Mediador. Mediador is built to support this type of multiple
+  # inheritance, the hypothesis being that almost any object will benefit
+  # from being amplified with event support
+  Heir = ->
+  Heir.prototype.off     = Mediador.prototype.off
+  Heir.prototype.on      = Mediador.prototype.on
+  Heir.prototype.trigger = Mediador.prototype.trigger
+
+  # Lets get a new instance of the custom function
+  heir = new Heir
+
+  # Listen to event
+  heir.on 'event', ->
+
+    # …and assert that the last element is always the emitter
+    assert.equal arguments[arguments.length - 1], heir
+
+    # Confirm that the listener was called
+    flags = flags.map (flag, index)->
+      if not flag and (flags[index - 1] or index == 0)
+        return true
+      return flag
+
+  # Trigger the event with different arguments
+  heir.trigger "event", ["lala"]
+  heir.trigger "event", []
+  heir.trigger "event", [2, 32, true]
+
+  # Assert the flags
+  assert flags[0]
+  assert flags[1]
+  assert flags[2]
 
 spec.go()
