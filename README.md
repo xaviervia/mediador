@@ -71,7 +71,7 @@ yourInstance.off("event", listener)
 
 ### You can add the methods directly in an object
 
-```
+```javascript
 var Mediador     = require("mediador")
 var emitter      = {}
 
@@ -83,6 +83,34 @@ emitter.on("event", function (text) {
 })
 
 emitter.trigger("event", ["Hello World"])
+```
+
+### The emitter is sent as argument
+
+The event emitter is always sent to the listeners as the last argument.
+This is essential because otherwise the emitter would be lost in many
+contexts and triggering further events may be the only way for a listener
+to pass information forward.
+
+```javascript
+var Mediador = require("mediador")
+
+var YourClass = function () {}
+YourClass.prototype.on      = Mediador.prototype.on
+YourClass.prototype.off     = Mediador.prototype.off
+YourClass.prototype.trigger = Mediador.prototype.trigger
+
+var yourInstance = new YourClass()
+
+yourInstance.on("completed", function () {
+  console.log("The 'event' was successfully triggered and 'completed' too")
+})
+
+yourInstance.on("event", function (irrelevant, emitter) {
+  emitter.trigger("completed")
+})
+
+yourInstance.trigger("event", ["something irrelevant"])
 ```
 
 ### It also works in bulk
@@ -212,6 +240,8 @@ Mediador.prototype.trigger
 ### trigger( event, args )
 
 Fires all the listener callbacks associated with the `event`. Chainable.
+The arguments for the listeners are each element within the `args` array,
+followed by the emitter itself.
 
 #### Arguments
 

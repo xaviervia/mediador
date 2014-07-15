@@ -71,7 +71,7 @@
 //
 // ### You can add the methods directly in an object
 //
-// ```
+// ```javascript
 // var Mediador     = require("mediador")
 // var emitter      = {}
 //
