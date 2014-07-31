@@ -190,209 +190,233 @@
 // > Corollary: EventEmitter's `once` method is not needed. Keep your APIs
 // > simple (KYAS?)
 
-"use strict"
-var assert   = require("assert")
-var spec     = require("washington")
+"use strict";
 
-var Mediador = function () {}
+(function (name, definition) {
+  
+  //! AMD
+  if (typeof define === 'function') 
+    define(definition)
 
-// Mediador.prototype.on
-// ---------------------
-//
-// ### on( event, callback )
-//
-// Stores the `callback` function as a listener for the specified `event`.
-// If the callback was already present, does nothing.
-//
-// Chainable.
-//
-// #### Arguments
-//
-// - `String` event
-// - `Function` callback
-//
-// #### Returns
-//
-// - `Mediador` this
-//
-// ### on( eventHash )
-//
-// Binds all property methods of the `eventHash` as listeners in their
-// respective events. For example, if `on` is called with the hash:
-//
-// ```javascript
-// {
-//   hear: function (something) { console.log(something); },
-//   see: function (something) { console.log(something); },
-// }
-// ```
-//
-// the effect will be the same as if `on` had been called with `('hear',
-// function (...) {...})` and `('see', function (...) {...})`.
-//
-// Chainable.
-//
-// #### Arguments
-//
-// - `Object` eventHash
-//
-// #### Returns
-//
-// - `Mediador` this
-Mediador.prototype.on = function (event, callback) {
+  //! Node.js
+  else if (typeof module !== 'undefined' && module.exports) 
+    module.exports = definition()
+  
+  //! Browser
+  else { 
+    var theModule = definition(), global = window, old = global[name];
 
-  //! If no callback, event hash assumed
-  if (!callback) {
+    theModule.noConflict = function () {
+      global[name] = old;
+      return theModule;
+    }
 
-    //! For each key in the hash
-    Object.keys(event).forEach((function (key) {
-
-    //! If the property named with the key is a function
-    if (event[key] instanceof Function)
-
-      //! ...add the function as a listener to the event named after the key
-      this.on(key, event[key]) }).bind(this))
-
+    global[name] = theModule
   }
 
-  //! If there is a callback this is setting a single event listener
-  else {
+})('Mediador', function () {
 
-    //! Create the event listeners hash if there wasn't one
-    this.listeners = this.listeners || {}
+  var Mediador = function () {}
 
-    //! Create the listeners array for the event if there wasn't one
-    this.listeners[event] = this.listeners[event] || []
+  // Mediador.prototype.on
+  // ---------------------
+  //
+  // ### on( event, callback )
+  //
+  // Stores the `callback` function as a listener for the specified `event`.
+  // If the callback was already present, does nothing.
+  //
+  // Chainable.
+  //
+  // #### Arguments
+  //
+  // - `String` event
+  // - `Function` callback
+  //
+  // #### Returns
+  //
+  // - `Mediador` this
+  //
+  // ### on( eventHash )
+  //
+  // Binds all property methods of the `eventHash` as listeners in their
+  // respective events. For example, if `on` is called with the hash:
+  //
+  // ```javascript
+  // {
+  //   hear: function (something) { console.log(something); },
+  //   see: function (something) { console.log(something); },
+  // }
+  // ```
+  //
+  // the effect will be the same as if `on` had been called with `('hear',
+  // function (...) {...})` and `('see', function (...) {...})`.
+  //
+  // Chainable.
+  //
+  // #### Arguments
+  //
+  // - `Object` eventHash
+  //
+  // #### Returns
+  //
+  // - `Mediador` this
+  Mediador.prototype.on = function (event, callback) {
 
-    //! If the given callback was not present
-    if (this.listeners[event].indexOf(callback) == -1)
+    //! If no callback, event hash assumed
+    if (!callback) {
 
-      //! Store the callback
-      this.listeners[event].push(callback)
-
-  }
-
-  //! Return this for chainability
-  return this
-
-}
-
-// Mediador.prototype.trigger
-// --------------------------
-//
-// ### trigger( event, args )
-//
-// Fires all the listener callbacks associated with the `event`. Chainable.
-// The arguments for the listeners are each element within the `args` array,
-// followed by the emitter itself.
-//
-// #### Arguments
-//
-// - `String` event
-// - `Array` args
-//
-// #### Returns
-//
-// - `Mediador` this
-Mediador.prototype.trigger = function (event, args) {
-
-  //! If there is a listeners hash
-  if (this.listeners && this.listeners instanceof Object &&
-
-      //! ...and there is an array for the event
-      this.listeners[event] instanceof Array)
-
-      //! Iterate the listeners
-      this.listeners[event].forEach((function (listener) {
-
-        //! ...and run 'em!
-        listener.apply(null, (args ? args : []).concat([this])) }).bind(this))
-
-  //! Return this for chainability
-  return this
-
-}
-
-// Mediador.prototype.off
-// ----------------------
-//
-// ### off( event, callback )
-//
-// Removes the `callback` function from the listener list to the `event`.
-// Does nothing if the callback was not in the list.
-//
-// Chainable.
-//
-// #### Arguments
-//
-// - `String` event
-// - `Function` callback
-//
-// #### Returns
-//
-// - `Mediador` this
-//
-// ### off( eventHash )
-//
-// Releases all property methods of the `eventHash` from their
-// respective events. For example, if `off` is called with the hash:
-//
-// ```javascript
-// {
-//   hear: function (something) { console.log(something); },
-//   see: function (something) { console.log(something); },
-// }
-// ```
-//
-// the effect will be the same as if `off` had been called with `('hear',
-// function (...) {...})` and `('see', function (...) {...})`.
-//
-// Chainable.
-//
-// #### Arguments
-//
-// - `Object` eventHash
-//
-// #### Returns
-//
-// - `Mediador` this
-Mediador.prototype.off = function (event, callback) {
-
-  //! If there is no callback assumed to be an eventHash
-  if (!callback) {
-
-    //! For each key in the hash
-    Object.keys(event).forEach((function (key) {
+      //! For each key in the hash
+      Object.keys(event).forEach((function (key) {
 
       //! If the property named with the key is a function
       if (event[key] instanceof Function)
 
-        //! ...remove the function from the listeners' list of the event
-        //! named after the key
-        this.off(key, event[key]) }).bind(this))
+        //! ...add the function as a listener to the event named after the key
+        this.on(key, event[key]) }).bind(this))
+
+    }
+
+    //! If there is a callback this is setting a single event listener
+    else {
+
+      //! Create the event listeners hash if there wasn't one
+      this.listeners = this.listeners || {}
+
+      //! Create the listeners array for the event if there wasn't one
+      this.listeners[event] = this.listeners[event] || []
+
+      //! If the given callback was not present
+      if (this.listeners[event].indexOf(callback) == -1)
+
+        //! Store the callback
+        this.listeners[event].push(callback)
+
+    }
+
+    //! Return this for chainability
+    return this
 
   }
 
-  //! If there is a callback this is removing a single event listener
-  else
+  // Mediador.prototype.trigger
+  // --------------------------
+  //
+  // ### trigger( event, args )
+  //
+  // Fires all the listener callbacks associated with the `event`. Chainable.
+  // The arguments for the listeners are each element within the `args` array,
+  // followed by the emitter itself.
+  //
+  // #### Arguments
+  //
+  // - `String` event
+  // - `Array` args
+  //
+  // #### Returns
+  //
+  // - `Mediador` this
+  Mediador.prototype.trigger = function (event, args) {
 
-    //! You can't be to careful. Check everything is in place.
+    //! If there is a listeners hash
     if (this.listeners && this.listeners instanceof Object &&
+
+        //! ...and there is an array for the event
         this.listeners[event] instanceof Array)
 
-        //! Filter out the callback
-        this.listeners[event] =
-          this.listeners[event]
-            .filter(function (listener) {
-              return listener !== callback })
+        //! Iterate the listeners
+        this.listeners[event].forEach((function (listener) {
 
-  //! Returns this for chainability
-  return this
+          //! ...and run 'em!
+          listener.apply(null, (args ? args : []).concat([this])) }).bind(this))
 
-}
+    //! Return this for chainability
+    return this
 
-module.exports = Mediador
+  }
 
+  // Mediador.prototype.off
+  // ----------------------
+  //
+  // ### off( event, callback )
+  //
+  // Removes the `callback` function from the listener list to the `event`.
+  // Does nothing if the callback was not in the list.
+  //
+  // Chainable.
+  //
+  // #### Arguments
+  //
+  // - `String` event
+  // - `Function` callback
+  //
+  // #### Returns
+  //
+  // - `Mediador` this
+  //
+  // ### off( eventHash )
+  //
+  // Releases all property methods of the `eventHash` from their
+  // respective events. For example, if `off` is called with the hash:
+  //
+  // ```javascript
+  // {
+  //   hear: function (something) { console.log(something); },
+  //   see: function (something) { console.log(something); },
+  // }
+  // ```
+  //
+  // the effect will be the same as if `off` had been called with `('hear',
+  // function (...) {...})` and `('see', function (...) {...})`.
+  //
+  // Chainable.
+  //
+  // #### Arguments
+  //
+  // - `Object` eventHash
+  //
+  // #### Returns
+  //
+  // - `Mediador` this
+  Mediador.prototype.off = function (event, callback) {
+
+    //! If there is no callback assumed to be an eventHash
+    if (!callback) {
+
+      //! For each key in the hash
+      Object.keys(event).forEach((function (key) {
+
+        //! If the property named with the key is a function
+        if (event[key] instanceof Function)
+
+          //! ...remove the function from the listeners' list of the event
+          //! named after the key
+          this.off(key, event[key]) }).bind(this))
+
+    }
+
+    //! If there is a callback this is removing a single event listener
+    else
+
+      //! You can't be to careful. Check everything is in place.
+      if (this.listeners && this.listeners instanceof Object &&
+          this.listeners[event] instanceof Array)
+
+          //! Filter out the callback
+          this.listeners[event] =
+            this.listeners[event]
+              .filter(function (listener) {
+                return listener !== callback })
+
+    //! Returns this for chainability
+    return this
+
+  } 
+
+  //! return Mediador
+  return Mediador
+ 
+})
 // Testing
 // -------
 //

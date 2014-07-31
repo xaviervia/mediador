@@ -1,0 +1,14 @@
+<!doctype html>
+<script src="../mediador.js"></script>
+<script>
+  var WillMediate     = {}
+  WillMediate.on      = Mediador.prototype.on
+  WillMediate.off     = Mediador.prototype.off
+  WillMediate.trigger = Mediador.prototype.trigger
+
+  WillMediate.on("event", function (text) {
+    console.log(text)
+  })
+
+  WillMediate.trigger("event", ["Another brick in the wall"])
+</script>
