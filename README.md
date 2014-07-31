@@ -12,6 +12,15 @@ Installation
 npm install mediador --save
 ```
 
+### Browser and RequireJS
+
+Mediador is also available for the browser and 
+[RequireJS](http://requirejs.org/). You can install it with `bower`.
+
+```
+bower install mediador --save
+```
+
 Usage
 -----
 
