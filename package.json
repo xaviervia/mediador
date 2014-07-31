@@ -17,7 +17,7 @@
     "mediator"
   ],
   "author": "Xavier Via <fernando.via@gmail.com>",
-  "license": "BSD-2-Clause",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/xaviervia/mediador/issues"
   },
