@@ -322,6 +322,6 @@ License
 
 Copyright 2014 Xavier Via
 
-BSD 2 Clause license.
+ISC license.
 
 See [LICENSE](LICENSE) attached.
