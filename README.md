@@ -24,21 +24,24 @@ bower install mediador --save
 Usage
 -----
 
-Mediador is a [**mixin**](https://en.wikipedia.org/wiki/Mixin). The idea is
-that you can add its methods to the prototypes or objects that you want to
-amplify with events.
+### Instance
 
-The events are stored in the `listeners` property within the emitter object.
-Bear this in mind in order to not override the property accidentally.
+`trigger` maps each element in the second argument array as an argument to
+send to the listener function.
 
-You can find this examples in the [`examples`](examples) folder in this repo.
-You can run them without installing `mediador` by running `npm link` on
-the repo folder (may require sudo).
+```javascript
+var Mediador = require("mediador")
 
-### Simple on/trigger
+var mediador = new Mediador
 
-Trigger will map each element in the array as an argument to the listener
-function.
+mediador.on("event", function (text) {
+  console.log("event emitted with arg: " + text)
+})
+
+mediador.trigger("event", ["hello"])
+```
+
+### Mixin: Inheriting on/trigger
 
 ```javascript
 var Mediador = require("mediador")
@@ -55,6 +58,21 @@ yourInstance.on("event", function (you) {
 
 yourInstance.trigger("event", ["Me"])
 ```
+
+The simplest way to use Mediador is to make instances, but it is not the
+recommended way.
+
+Mediador is a [**mixin**](https://en.wikipedia.org/wiki/Mixin). The idea is
+that you can add its methods to the prototypes or objects that you want to
+amplify with events, without having to make them inherit directly from
+Mediador.
+
+The events are stored in the `listeners` property within the emitter object.
+Bear this in mind so to not accidentally override the property.
+
+You can find these examples in the [`examples`](examples) folder in this 
+repo. You can run them without installing `mediador` by running `npm link`
+on the repo folder (may require `sudo`).
 
 ### Off with the listener
 
