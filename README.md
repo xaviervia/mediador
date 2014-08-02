@@ -94,6 +94,9 @@ yourInstance.on("event", listener)
 yourInstance.trigger("event", ["Me"])
 
 yourInstance.off("event", listener)
+
+// Will do nothing
+yourInstance.trigger("event", ["Nothing"])
 ```
 
 ### You can add the methods directly in an object
@@ -114,10 +117,18 @@ emitter.trigger("event", ["Hello World"])
 
 ### The emitter is sent as argument
 
-The event emitter is always sent to the listeners as the last argument.
-This is essential because otherwise the emitter would be lost in many
-contexts and triggering further events may be the only way for a listener
-to pass information forward.
+The event emitter is always sent to the listener functions
+as the last argument.
+
+This is crucial, because otherwise in the contexts of many listeners there
+would be no available references to the emitter–the emitter would be 
+unreachable. The emitter is needed for listeners to be able to trigger further
+events in it–in fact, that might be the only way for a listener to pass
+information forward.
+
+> Another strategy to make the emitter available for the listeners would be
+> to bind the listener to `this`, `this` being the emitter object. I 
+> really don't like when libraries do that.
 
 ```javascript
 var Mediador = require("mediador")
@@ -129,12 +140,12 @@ YourClass.prototype.trigger = Mediador.prototype.trigger
 
 var yourInstance = new YourClass()
 
-yourInstance.on("completed", function () {
-  console.log("The 'event' was successfully triggered and 'completed' too")
-})
-
 yourInstance.on("event", function (irrelevant, emitter) {
   emitter.trigger("completed")
+})
+
+yourInstance.on("completed", function () {
+  console.log("The 'event' was successfully triggered and 'completed' too")
 })
 
 yourInstance.trigger("event", ["something irrelevant"])
@@ -152,37 +163,39 @@ YourClass.prototype.trigger = Mediador.prototype.trigger
 
 var yourInstance = new YourClass()
 
-var eventHash = {
+var listenerSet = {
   event: function () {
     console.log("Called the event")
   }
 }
 
-yourInstance.on(eventHash)
+yourInstance.on(listenerSet)
 
 yourInstance.trigger("event")
 
-yourInstance.off(eventHash)
+yourInstance.off(listenerSet)
 ```
 
-#### What is the `eventHash`?
+#### What is the `listenerSet`?
 
-**Mediador** introduces the concept of an `eventHash`, that is just an
+**Mediador** introduces the concept of an `listenerSet`, that is just an
 object where every property method will be added as a listener in the
-emitter. For example, if the hash has a `read` method, its function will
+emitter. For example, if the set has a `read` method, its function will
 be added as a listener for the `read` event in the emitter.
 
 This is very useful both for adding events in bulk and for removing them.
-**Mediador** provides support for both operation in the `on` and `off`
+**Mediador** provides support for both operations in the `on` and `off`
 methods.
 
 ### Why does Mediador inserts the `listeners` property?
 
-This questions aims at the fact that once you add a listener with the `on`
-method, it will get added to the `listeners` property of the object, which
-will be created if not present and used if present
-(without checking for the `listeners` type, which may have been written by
-another function). This is of course a question about namespace pollution.
+This is a question about namespace pollution.
+
+When you add a listener using the `on` method, Mediador adds the listener
+function to the `listeners` property of the object, which will be _created_
+if not present and used as it is if present. Mediador uses the `listeners`
+property without checking for the property's type. The property may well
+have been written by another function not related to Mediador. Is this OK?
 
 The thing is, there are several strategies to avoid name collision within an
 object, and most of them involve encapsulating the library specific data
@@ -194,12 +207,14 @@ I don't favor this approach because:
    object?
 2. Will you gladly use a library that extends your object blindfolded and
    risk name collision anyways?
+3. Why closing the door to interacting with the properties set by the 
+   library? You may very well wish to modify or query the `listeners` set.
 
 In other words, I consider that using lightly a library _that extends your
 objects_ is a poor design choice. **Mediador** and other libraries of
 its kind should be considered part of your design and taken for what they
-are: tested, encapsulated and standardised methods to achieve certain
-behaviours that are useful only because they save you time.
+are: tested, encapsulated and standardized methods to achieve certain
+behaviors that are useful only because they save you _time_.
 
 ### Why is there no `once` method?
 
@@ -214,7 +229,7 @@ mediador.on("fire", function notAnonymousAnymore() {
 })
 ```
 
-> Corollary: EventEmitter's `once` method is not needed. Keep your APIs
+> Corollary: EventEmitter's `once` method is not required. Keep your APIs
 > simple (KYAS?)
 
 Mediador.prototype.on
