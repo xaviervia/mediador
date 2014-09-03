@@ -230,7 +230,7 @@ mediador.on("fire", function notAnonymousAnymore() {
 ```
 
 > Corollary: EventEmitter's `once` method is not required. Keep your APIs
-> simple (KYAS?)
+> simple
 
 Mediador.prototype.on
 ---------------------
