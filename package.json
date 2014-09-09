@@ -22,6 +22,6 @@
     "url": "https://github.com/xaviervia/mediador/issues"
   },
   "devDependencies": {
-    "washington": "~0.3.0"
+    "washington": "~0.4.3"
   }
 }
