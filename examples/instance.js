@@ -6,4 +6,4 @@ mediador.on("event", function (text) {
   console.log("event emitted with arg: " + text)
 })
 
-mediador.trigger("event", ["hello"])
+mediador.emit("event", ["hello"])

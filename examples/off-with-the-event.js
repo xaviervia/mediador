@@ -3,7 +3,7 @@ var Mediador = require("mediador")
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on
 YourClass.prototype.off     = Mediador.prototype.off
-YourClass.prototype.trigger = Mediador.prototype.trigger
+YourClass.prototype.emit = Mediador.prototype.emit
 
 var yourInstance = new YourClass()
 var listener     = function (you) {
@@ -12,6 +12,6 @@ var listener     = function (you) {
 
 yourInstance.on("event", listener)
 
-yourInstance.trigger("event", ["Me"])
+yourInstance.emit("event", ["Me"])
 
 yourInstance.off("event", listener)

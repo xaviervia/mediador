@@ -3,7 +3,7 @@
 //
 // [ ![Codeship Status for xaviervia/mediador](https://codeship.io/projects/1b988be0-ebb2-0131-3c3b-4ebb653f9bc0/status)](https://codeship.io/projects/26547)
 //
-// EventEmitter look alike built as a mixin, with bulk listener setup support.
+// Event venue built as a mixin.
 //
 // Installation
 // ------------
@@ -26,7 +26,7 @@
 // 
 // ### Instance
 //
-// `trigger` maps each element in the second argument array as an argument to
+// `emit` maps each element in the second argument array as an argument to
 // send to the listener function.
 //
 // ```javascript
@@ -38,17 +38,17 @@
 //   console.log("event emitted with arg: " + text)
 // })
 //
-// mediador.trigger("event", ["hello"])
+// mediador.emit("event", ["hello"])
 // ```
 //
-// ### Mixin: Inheriting on/trigger
+// ### Mixin: Inheriting on/emit
 //
 // ```javascript
 // var Mediador = require("mediador")
 //
 // var YourClass = function () {}
 // YourClass.prototype.on      = Mediador.prototype.on
-// YourClass.prototype.trigger = Mediador.prototype.trigger
+// YourClass.prototype.emit = Mediador.prototype.emit
 //
 // var yourInstance = new YourClass()
 //
@@ -56,7 +56,7 @@
 //   console.log(you + " already firing events!")
 // })
 //
-// yourInstance.trigger("event", ["Me"])
+// yourInstance.emit("event", ["Me"])
 // ```
 //
 // The simplest way to use Mediador is to make instances, but it is not the
@@ -84,7 +84,7 @@
 // var YourClass = function () {}
 // YourClass.prototype.on      = Mediador.prototype.on
 // YourClass.prototype.off     = Mediador.prototype.off
-// YourClass.prototype.trigger = Mediador.prototype.trigger
+// YourClass.prototype.emit = Mediador.prototype.emit
 //
 // var yourInstance = new YourClass()
 // var listener     = function (you) {
@@ -93,12 +93,12 @@
 //
 // yourInstance.on("event", listener)
 //
-// yourInstance.trigger("event", ["Me"])
+// yourInstance.emit("event", ["Me"])
 //
 // yourInstance.off("event", listener)
 //
 // // Will do nothing
-// yourInstance.trigger("event", ["Nothing"])
+// yourInstance.emit("event", ["Nothing"])
 // ```
 //
 // ### You can add the methods directly in an object
@@ -108,13 +108,13 @@
 // var emitter      = {}
 //
 // emitter.on       = Mediator.prototype.on
-// emitter.trigger  = Mediator.prototype.trigger
+// emitter.emit  = Mediator.prototype.emit
 //
 // emitter.on("event", function (text) {
 //   console.log(text)
 // })
 //
-// emitter.trigger("event", ["Hello World"])
+// emitter.emit("event", ["Hello World"])
 // ```
 //
 // ### The emitter is sent as argument
@@ -124,7 +124,7 @@
 //
 // This is crucial, because otherwise in the contexts of many listeners there
 // would be no available references to the emitter–the emitter would be 
-// unreachable. The emitter is needed for listeners to be able to trigger 
+// unreachable. The emitter is needed for listeners to be able to emit 
 // further events in it–in fact, that might be the only way for a listener to 
 // pass information forward.
 //
@@ -138,19 +138,19 @@
 // var YourClass = function () {}
 // YourClass.prototype.on      = Mediador.prototype.on
 // YourClass.prototype.off     = Mediador.prototype.off
-// YourClass.prototype.trigger = Mediador.prototype.trigger
+// YourClass.prototype.emit = Mediador.prototype.emit
 //
 // var yourInstance = new YourClass()
 //
 // yourInstance.on("event", function (irrelevant, emitter) {
-//   emitter.trigger("completed")
+//   emitter.emit("completed")
 // })
 //
 // yourInstance.on("completed", function () {
-//   console.log("The 'event' was successfully triggered and 'completed' too")
+//   console.log("The 'event' was successfully emited and 'completed' too")
 // })
 //
-// yourInstance.trigger("event", ["something irrelevant"])
+// yourInstance.emit("event", ["something irrelevant"])
 // ```
 //
 // ### It also works in bulk
@@ -161,7 +161,7 @@
 // var YourClass = function () {}
 // YourClass.prototype.on      = Mediador.prototype.on
 // YourClass.prototype.off     = Mediador.prototype.off
-// YourClass.prototype.trigger = Mediador.prototype.trigger
+// YourClass.prototype.emit = Mediador.prototype.emit
 //
 // var yourInstance = new YourClass()
 //
@@ -173,7 +173,7 @@
 //
 // yourInstance.on(listenerSet)
 //
-// yourInstance.trigger("event")
+// yourInstance.emit("event")
 //
 // yourInstance.off(listenerSet)
 // ```
@@ -308,18 +308,18 @@
   Mediador.prototype.on = function (event, callback) {
 
     //! If no callback, event hash assumed
-    if (!callback) {
+    if (!callback)
 
       //! For each key in the hash
-      Object.keys(event).forEach((function (key) {
+      for (var key in event) {
 
-      //! If the property named with the key is a function
-      if (event[key] instanceof Function)
+        //! If the property named with the key is a function...
+        if (event[key] instanceof Function)
 
-        //! ...add the function as a listener to the event named after the key
-        this.on(key, event[key]) }).bind(this))
+          //! add the function as a listener to the event named after the key
+          this.on(key, event[key])
 
-    }
+      }
 
     //! If there is a callback this is setting a single event listener
     else {
@@ -343,10 +343,10 @@
 
   }
 
-  // Mediador.prototype.trigger
+  // Mediador.prototype.emit
   // --------------------------
   //
-  // ### trigger( event, args )
+  // ### emit( event, args )
   //
   // Fires all the listener callbacks associated with the `event`. Chainable.
   // The arguments for the listeners are each element within the `args` array,
@@ -360,19 +360,20 @@
   // #### Returns
   //
   // - `Mediador` this
-  Mediador.prototype.trigger = function (event, args) {
+  Mediador.prototype.emit = function (event, args) {
 
     //! If there is a listeners hash
     if (this.listeners && this.listeners instanceof Object &&
 
         //! ...and there is an array for the event
-        this.listeners[event] instanceof Array)
+        this.listeners[event] instanceof Array) 
 
         //! Iterate the listeners
-        this.listeners[event].forEach((function (listener) {
-
+        for (var index in this.listeners[event])
+          
           //! ...and run 'em!
-          listener.apply(null, (args ? args : []).concat([this])) }).bind(this))
+          this.listeners[event][index]
+            .apply(null, (args ? args : []).concat([this]))
 
     //! Return this for chainability
     return this
@@ -428,14 +429,14 @@
     if (!callback) {
 
       //! For each key in the hash
-      Object.keys(event).forEach((function (key) {
+      for (var key in event)
 
         //! If the property named with the key is a function
         if (event[key] instanceof Function)
 
           //! ...remove the function from the listeners' list of the event
           //! named after the key
-          this.off(key, event[key]) }).bind(this))
+          this.off(key, event[key])
 
     }
 

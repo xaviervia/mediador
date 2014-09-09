@@ -26,7 +26,7 @@ Usage
 
 ### Instance
 
-`trigger` maps each element in the second argument array as an argument to
+`emit` maps each element in the second argument array as an argument to
 send to the listener function.
 
 ```javascript
@@ -38,17 +38,17 @@ mediador.on("event", function (text) {
   console.log("event emitted with arg: " + text)
 })
 
-mediador.trigger("event", ["hello"])
+mediador.emit("event", ["hello"])
 ```
 
-### Mixin: Inheriting on/trigger
+### Mixin: Inheriting on/emit
 
 ```javascript
 var Mediador = require("mediador")
 
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on
-YourClass.prototype.trigger = Mediador.prototype.trigger
+YourClass.prototype.emit = Mediador.prototype.emit
 
 var yourInstance = new YourClass()
 
@@ -56,7 +56,7 @@ yourInstance.on("event", function (you) {
   console.log(you + " already firing events!")
 })
 
-yourInstance.trigger("event", ["Me"])
+yourInstance.emit("event", ["Me"])
 ```
 
 The simplest way to use Mediador is to make instances, but it is not the
@@ -82,7 +82,7 @@ var Mediador = require("mediador")
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on
 YourClass.prototype.off     = Mediador.prototype.off
-YourClass.prototype.trigger = Mediador.prototype.trigger
+YourClass.prototype.emit = Mediador.prototype.emit
 
 var yourInstance = new YourClass()
 var listener     = function (you) {
@@ -91,12 +91,12 @@ var listener     = function (you) {
 
 yourInstance.on("event", listener)
 
-yourInstance.trigger("event", ["Me"])
+yourInstance.emit("event", ["Me"])
 
 yourInstance.off("event", listener)
 
 // Will do nothing
-yourInstance.trigger("event", ["Nothing"])
+yourInstance.emit("event", ["Nothing"])
 ```
 
 ### You can add the methods directly in an object
@@ -106,13 +106,13 @@ var Mediador     = require("mediador")
 var emitter      = {}
 
 emitter.on       = Mediator.prototype.on
-emitter.trigger  = Mediator.prototype.trigger
+emitter.emit  = Mediator.prototype.emit
 
 emitter.on("event", function (text) {
   console.log(text)
 })
 
-emitter.trigger("event", ["Hello World"])
+emitter.emit("event", ["Hello World"])
 ```
 
 ### The emitter is sent as argument
@@ -122,7 +122,7 @@ as the last argument.
 
 This is crucial, because otherwise in the contexts of many listeners there
 would be no available references to the emitter–the emitter would be 
-unreachable. The emitter is needed for listeners to be able to trigger further
+unreachable. The emitter is needed for listeners to be able to emit further
 events in it–in fact, that might be the only way for a listener to pass
 information forward.
 
@@ -136,19 +136,19 @@ var Mediador = require("mediador")
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on
 YourClass.prototype.off     = Mediador.prototype.off
-YourClass.prototype.trigger = Mediador.prototype.trigger
+YourClass.prototype.emit = Mediador.prototype.emit
 
 var yourInstance = new YourClass()
 
 yourInstance.on("event", function (irrelevant, emitter) {
-  emitter.trigger("completed")
+  emitter.emit("completed")
 })
 
 yourInstance.on("completed", function () {
-  console.log("The 'event' was successfully triggered and 'completed' too")
+  console.log("The 'event' was successfully emited and 'completed' too")
 })
 
-yourInstance.trigger("event", ["something irrelevant"])
+yourInstance.emit("event", ["something irrelevant"])
 ```
 
 ### It also works in bulk
@@ -159,7 +159,7 @@ var Mediador = require("mediador")
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on
 YourClass.prototype.off     = Mediador.prototype.off
-YourClass.prototype.trigger = Mediador.prototype.trigger
+YourClass.prototype.emit = Mediador.prototype.emit
 
 var yourInstance = new YourClass()
 
@@ -171,7 +171,7 @@ var listenerSet = {
 
 yourInstance.on(listenerSet)
 
-yourInstance.trigger("event")
+yourInstance.emit("event")
 
 yourInstance.off(listenerSet)
 ```
@@ -276,10 +276,10 @@ Chainable.
 
 - `Mediador` this
 
-Mediador.prototype.trigger
---------------------------
+Mediador.prototype.emit
+-----------------------
 
-### trigger( event, args )
+### emit( event, args )
 
 Fires all the listener callbacks associated with the `event`. Chainable.
 The arguments for the listeners are each element within the `args` array,

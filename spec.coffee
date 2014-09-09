@@ -2,204 +2,173 @@ spec       = require "washington"
 assert     = require "assert"
 Mediador   = require "./mediador"
 
-spec "Fires events added to it, chainable", ->
 
-  # The flag should be true and provides verification that the listener
-  # function was executed
-  flag = false
 
-  # The listener function that asserts that the argument is correct
-  # and set the flag to true, verifying that it was executed
-  datumAsserter = (datum)->
-    assert.equal datum, "datum"
-    flag = true
+spec "Calls listeners subscribed to it. Chainable", ->
+  # given
+  venue         = {}
+  venue.on      = Mediador::on
+  venue.emit    = Mediador::emit
 
-  # Define a function that inherits the "on" and "trigger" methods
-  # from Mediador. Mediador is built to support this type of multiple
-  # inheritance, the hypothesis being that almost any object will benefit
-  # from being amplified with event support
-  Heir = ->
-  Heir.prototype.on      = Mediador.prototype.on
-  Heir.prototype.trigger = Mediador.prototype.trigger
+  # given
+  spy          = (arg)->
+    spy.called = true
+    spy.arg    = arg
 
-  # Lets get a new instance of the custom function
-  heir = new Heir
+  # when
+  result = venue.on "fire", spy
 
-  # Hook the listener on the "fire" event
-  result = heir.on "fire", datumAsserter
+  # then chainable
+  assert result is venue
 
-  # Check that the return value of the "on" method is the emitter itself,
-  # for chainability
-  assert.equal result, heir
+  # when 
+  result = venue.emit "fire", ["text"]
 
-  # Trigger teh "fire" event with the argument
-  result = heir.trigger "fire", ["datum"]
+  # then emitted
+  assert spy.called
+  assert spy.arg == "text"
 
-  # Check that "trigger" is chainable too
-  assert.equal result, heir
 
-  # Verify that the listener was in fact called
-  assert.equal flag, true
 
-spec "Removes the event when instructed", ->
+spec "Removes listeners", ->
+  # given
+  venue         = {}
+  venue.on      = Mediador::on
+  venue.off     = Mediador::off
+  venue.emit    = Mediador::emit
 
-  # The flag should be false and provides verification that the listener
-  # function was not executed
-  flag = false
+  # given
+  spy          = (arg)->
+    spy.called = true
+    spy.arg    = arg
 
-  # The listener function that asserts that the argument is correct
-  # and set the flag to true, verifying that it was executed
-  datumAsserter = (datum)->
-    assert.equal datum, "datum"
-    flag = true
+  # when 
+  venue.on "fire", spy
+  result = venue.off "fire", spy
 
-  # Define a function that inherits the "on", "off", and "trigger" methods
-  # from Mediador. Mediador is built to support this type of multiple
-  # inheritance, the hypothesis being that almost any object will benefit
-  # from being amplified with event support
-  Heir = ->
-  Heir.prototype.off     = Mediador.prototype.off
-  Heir.prototype.on      = Mediador.prototype.on
-  Heir.prototype.trigger = Mediador.prototype.trigger
+  # then chainable
+  assert result is venue
 
-  # Lets get a new instance of the custom function
-  heir = new Heir
+  # when
+  venue.emit "fire", ["text"]
 
-  # Hook the listener on the "fire" event
-  result = heir.on "fire", datumAsserter
+  # then unhooked
+  assert not spy.called
 
-  # Unhook the listener. Make sure that "off" is chainable
-  result = heir.off 'fire', datumAsserter
-  assert.equal result, heir
 
-  # Trigger the event, that should result in nothing at all happening
-  result = heir.trigger 'fire', ["datum"]
 
-  # Verify that the listener was not executed
-  assert.equal flag, false
+spec "Subscribers a listener set", ->
+  # given
+  set = 
+    action: (arg)->
+      set.action.called   = true
+      set.action.arg      = arg
+    reaction: (arg)->
+      set.reaction.called = true
+      set.reaction.arg    = arg
 
-spec "Binds a full event hash when instructed", ->
+  # given
+  venue         = {}
+  venue.on      = Mediador::on
+  venue.off     = Mediador::off
+  venue.emit    = Mediador::emit
 
-  # Flags for the two event in the eventHash
-  actionFlag = false
-  reactionFlag = false
+  # when
+  venue.on set
+  venue.emit 'action', ["act"]
+  venue.emit 'reaction', ["react"]
 
-  # The eventHash is just an object which properties' names will be used
-  # to map the corresponding methods to the events of the emitter
-  eventHash =
-    action: (datum)->
-      assert.equal datum, "actionDatum"
-      actionFlag = true
+  # then
+  assert set.action.called
+  assert set.action.arg == "act"
+  assert set.reaction.called
+  assert set.reaction.arg == "react"
 
-    reaction: (datum)->
-      assert.equal datum, "reactionDatum"
-      reactionFlag = true
 
-  # Define a function that inherits the "on", "off", and "trigger" methods
-  # from Mediador. Mediador is built to support this type of multiple
-  # inheritance, the hypothesis being that almost any object will benefit
-  # from being amplified with event support
-  Heir = ->
-  Heir.prototype.off     = Mediador.prototype.off
-  Heir.prototype.on      = Mediador.prototype.on
-  Heir.prototype.trigger = Mediador.prototype.trigger
 
-  # Lets get a new instance of the custom function
-  heir = new Heir
+spec "Unsubscribes a listener set", ->
+  # given
+  set = 
+    action: ->
+      set.action.called   = true
+    reaction: ->
+      set.reaction.called = true
 
-  # Hook the full eventHash
-  heir.on eventHash
+  # given
+  venue         = {}
+  venue.on      = Mediador::on
+  venue.off     = Mediador::off
+  venue.emit    = Mediador::emit
 
-  # Trigger the `action` event and the `reaction` event
-  heir.trigger 'action', ["actionDatum"]
-  heir.trigger 'reaction', ["reactionDatum"]
+  # when
+  venue.on set
+  venue.off set
+  venue.emit 'action'
+  venue.emit 'reaction'
 
-  # Verify that both event have been fired
-  assert.equal actionFlag, true
-  assert.equal reactionFlag, true
+  # then
+  assert not set.action.called
+  assert not set.reaction.called
 
-spec "Releases a full event hash when instructed", ->
 
-  # Flags for the two event in the eventHash
-  actionFlag = false
-  reactionFlag = false
 
-  # The eventHash is just an object which properties' names will be used
-  # to map the corresponding methods to the events of the emitter
-  eventHash =
-    action: (datum)->
-      assert.equal datum, "actionDatum"
-      actionFlag = true
+spec "Called listeners receive the venue as the last argument", ->
+  # given
+  spy = ->
+    spy.last = spy.last or []
+    spy.last.push arguments[arguments.length - 1]
 
-    reaction: (datum)->
-      assert.equal datum, "reactionDatum"
-      reactionFlag = true
+  # given
+  venue         = {}
+  venue.on      = Mediador::on
+  venue.off     = Mediador::off
+  venue.emit    = Mediador::emit
 
-  # Define a function that inherits the "on", "off", and "trigger" methods
-  # from Mediador. Mediador is built to support this type of multiple
-  # inheritance, the hypothesis being that almost any object will benefit
-  # from being amplified with event support
-  Heir = ->
-  Heir.prototype.off     = Mediador.prototype.off
-  Heir.prototype.on      = Mediador.prototype.on
-  Heir.prototype.trigger = Mediador.prototype.trigger
+  # when
+  venue.on 'event', spy
+  venue.emit "event", ["lala"]
+  venue.emit "event", []
+  venue.emit "event", [2, 32, true]
+  venue.emit "event"
 
-  # Lets get a new instance of the custom function
-  heir = new Heir
+  # then
+  assert arg is venue for arg in spy.last
 
-  # Hook the full eventHash
-  heir.on eventHash
 
-  # Unhook the full eventHash
-  heir.off eventHash
 
-  # Fire both events, should result in nothing happening
-  heir.trigger 'action', ["actionDatum"]
-  heir.trigger 'reaction', ["reactionDatum"]
+spec "Works even when no comprehensions are available", ->
+  # given
+  hijacked = Array::forEach
+  Array::forEach = null
 
-  # Verify that the listeners were not fired
-  assert.equal actionFlag, false
-  assert.equal reactionFlag, false
+  # given
+  venue         = {}
+  venue.on      = Mediador::on
+  venue.off     = Mediador::off
+  venue.emit    = Mediador::emit
 
-spec "Triggered listeners receive the emitter as the last argument", ->
+  # then
+  listener = ->
+  venue.on "event", listener
+  venue.emit "event", ["argument"]
+  venue.off "event", listener
 
-  # The flags should all be true in the end
-  flags = [false, false, false, false]
+  # then
+  hash = event: ->
+  venue.on hash
+  venue.emit "event", ["argument"]
+  venue.off hash
 
-  # Define a function that inherits the "on", "off", and "trigger" methods
-  # from Mediador. Mediador is built to support this type of multiple
-  # inheritance, the hypothesis being that almost any object will benefit
-  # from being amplified with event support
-  Heir = ->
-  Heir.prototype.off     = Mediador.prototype.off
-  Heir.prototype.on      = Mediador.prototype.on
-  Heir.prototype.trigger = Mediador.prototype.trigger
+  # restore
+  Array::forEach = hijacked
 
-  # Lets get a new instance of the custom function
-  heir = new Heir
 
-  # Listen to event
-  heir.on 'event', ->
 
-    # …and assert that the last element is always the emitter
-    assert.equal arguments[arguments.length - 1], heir
+spec "Supports using objets with 'name' property as events"
 
-    # Confirm that the listener was called
-    flags = flags.map (flag, index)->
-      if not flag and (flags[index - 1] or index == 0)
-        return true
-      return flag
+spec "Emits synchronously by default"
 
-  # Trigger the event with different arguments
-  heir.trigger "event", ["lala"]
-  heir.trigger "event", []
-  heir.trigger "event", [2, 32, true]
-  heir.trigger "event"
+spec "Emits asynchronously if instructed to"
 
-  # Assert the flags
-  assert flags[0]
-  assert flags[1]
-  assert flags[2]
-  assert flags[3]
 
 spec.go()

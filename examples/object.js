@@ -2,10 +2,10 @@ var Mediador     = require("mediador")
 var emitter      = {}
 
 emitter.on       = Mediador.prototype.on
-emitter.trigger  = Mediador.prototype.trigger
+emitter.emit  = Mediador.prototype.emit
 
 emitter.on("event", function (text) {
   console.log(text)
 })
 
-emitter.trigger("event", ["Hello World"])
+emitter.emit("event", ["Hello World"])
