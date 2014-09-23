@@ -443,15 +443,26 @@
     //! If there is a callback this is removing a single event listener
     else
 
-      //! You can't be to careful. Check everything is in place.
+      //! You can't be to careful. Check that everything is in place.
       if (this.listeners && this.listeners instanceof Object &&
-          this.listeners[event] instanceof Array)
+          this.listeners[event] instanceof Array) {
 
-          //! Filter out the callback
-          this.listeners[event] =
-            this.listeners[event]
-              .filter(function (listener) {
-                return listener !== callback })
+          //! Filter out the callback in an extremely painful way due to IE 8
+          var iterator  = 0
+          var index     = null
+          var max       = this.listeners[event].length
+
+          while (index === null || iterator < max) {
+
+            if (this.listeners[event][iterator] === callback)
+              index = iterator
+
+            iterator ++
+          }
+
+          this.listeners[event].splice(index, 1)
+
+      }
 
     //! Returns this for chainability
     return this

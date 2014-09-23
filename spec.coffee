@@ -138,8 +138,13 @@ spec "Called listeners receive the venue as the last argument", ->
 
 spec "Works even when no comprehensions are available", ->
   # given
-  hijacked = Array::forEach
-  Array::forEach = null
+  hijacked = {}
+  hijacked.forEach = Array::forEach
+  hijacked.filter  = Array::filter
+  hijacked.map     = Array::map   
+  Array::forEach   = null
+  Array::filter    = null
+  Array::map       = null
 
   # given
   venue         = {}
