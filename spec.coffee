@@ -57,7 +57,7 @@ spec "Removes listeners", ->
 
 
 
-spec "Subscribers a listener set", ->
+spec "Subscribes a listener set", ->
   # given
   set = 
     action: (arg)->
@@ -171,7 +171,24 @@ spec "Works even when no comprehensions are available", ->
 
 
 
-spec "Respects the original 'this'", ->
+spec "Allows setting 'this' with an argument", ->
+  # given
+  scope    = {}
+  mediador = new Mediador
+  mediador.on "event", ->
+      assert @ is scope
+      scope.callback = true 
+    , scope
+
+  # when
+  mediador.emit "event"
+
+  # then
+  assert scope.callback
+
+
+
+spec "Respects the original 'this' in listener sets", ->
   # given
   hash            = 
     event: ->
@@ -189,6 +206,8 @@ spec "Respects the original 'this'", ->
   assert hash.event.called
 
 
+
+spec "Doesn't hangs if the listener does not exist"
 
 spec "Supports using objets with 'name' property as events"
 

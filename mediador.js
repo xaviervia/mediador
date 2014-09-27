@@ -265,10 +265,11 @@
   // Mediador.prototype.on
   // ---------------------
   //
-  // ### on( event, callback )
+  // ### on( event, callback, scope )
   //
   // Stores the `callback` function as a listener for the specified `event`.
   // If the callback was already present, does nothing.
+  // Sets the `scope` as `this` for the callback when invoked.
   //
   // Chainable.
   //
@@ -276,6 +277,7 @@
   //
   // - `String` event
   // - `Function` callback
+  // - `Object` scope
   //
   // #### Returns
   //
@@ -296,6 +298,9 @@
   // the effect will be the same as if `on` had been called with `('hear',
   // function (...) {...})` and `('see', function (...) {...})`.
   //
+  // Once called, the listeners will always be invoked with the original 
+  // object as `this`.
+  //
   // Chainable.
   //
   // #### Arguments
@@ -305,7 +310,7 @@
   // #### Returns
   //
   // - `Mediador` this
-  Mediador.prototype.on = function (event, callback) {
+  Mediador.prototype.on = function (event, callback, scope) {
 
     //! If no callback, event hash assumed
     if (!callback)
@@ -317,7 +322,7 @@
         if (event[key] instanceof Function)
 
           //! add the function as a listener to the event named after the key
-          this.on(key, event[key])
+          this.on(key, event[key], event)
 
       }
 
@@ -331,10 +336,13 @@
       this.listeners[event] = this.listeners[event] || []
 
       //! If the given callback was not present
-      if (this.listeners[event].indexOf(callback) == -1)
+      if (this.listeners[event].indexOf(callback) === -1)
 
         //! Store the callback
-        this.listeners[event].push(callback)
+        this.listeners[event].push({
+          callback: callback,
+          scope: scope 
+        })
 
     }
 
@@ -372,8 +380,8 @@
         for (var index in this.listeners[event])
           
           //! ...and run 'em!
-          this.listeners[event][index]
-            .apply(null, (args ? args : []).concat([this]))
+          this.listeners[event][index].callback
+            .apply(this.listeners[event][index].scope, (args ? args : []).concat([this]))
 
     //! Return this for chainability
     return this
@@ -454,7 +462,7 @@
 
           while (index === null || iterator < max) {
 
-            if (this.listeners[event][iterator] === callback)
+            if (this.listeners[event][iterator].callback === callback)
               index = iterator
 
             iterator ++
