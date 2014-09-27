@@ -171,6 +171,25 @@ spec "Works even when no comprehensions are available", ->
 
 
 
+spec "Respects the original 'this'", ->
+  # given
+  hash            = 
+    event: ->
+      hash.event.called = true
+      assert @ is hash
+
+  # given
+  venue           = new Mediador
+  venue.on hash
+
+  # when
+  venue.emit "event"
+
+  # then
+  assert hash.event.called
+
+
+
 spec "Supports using objets with 'name' property as events"
 
 spec "Emits synchronously by default"
