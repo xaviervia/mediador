@@ -147,10 +147,10 @@ spec "Works even when no comprehensions are available", ->
   Array::map       = null
 
   # given
-  venue         = {}
-  venue.on      = Mediador::on
-  venue.off     = Mediador::off
-  venue.emit    = Mediador::emit
+  venue           = {}
+  venue.on        = Mediador::on
+  venue.off       = Mediador::off
+  venue.emit      = Mediador::emit
 
   # then
   listener = ->
@@ -165,7 +165,9 @@ spec "Works even when no comprehensions are available", ->
   venue.off hash
 
   # restore
-  Array::forEach = hijacked
+  Array::forEach  = hijacked.forEach
+  Array::filter   = hijacked.filter
+  Array::map      = hijacked.map
 
 
 
