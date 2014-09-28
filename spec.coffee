@@ -174,14 +174,14 @@ spec "Works even when no comprehensions are available", ->
 spec "Allows setting 'this' with an argument", ->
   # given
   scope    = {}
-  mediador = new Mediador
-  mediador.on "event", ->
+  venue = new Mediador
+  venue.on "event", ->
       assert @ is scope
       scope.callback = true
     , scope
 
   # when
-  mediador.emit "event"
+  venue.emit "event"
 
   # then
   assert scope.callback
@@ -207,6 +207,16 @@ spec "Respects the original 'this' in listener sets", ->
 
 
 
-spec "Doesn't hangs if the listener does not exist"
+spec "Doesn't hang if the listener does not exist", ->
+  # given
+  venue = new Mediador
+  set   =
+    event: ->
+  venue.on set
+
+  # when
+  venue.off "event", ->
+
+
 
 spec.go()
