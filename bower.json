@@ -1,7 +1,6 @@
 {
   "name": "mediador",
   "main": "mediador.js",
-  "version": "0.0.3",
   "authors": [
     "Xavier Via <fernando.via@gmail.com>"
   ],
