@@ -219,4 +219,11 @@ spec "Doesn't hang if the listener does not exist", ->
 
 
 
+spec "Use proper Subscription objects", ->
+  console.log "To be able to override 'emit' in Opera House"
+
+  throw new Error "pending"
+
+
+
 spec.go()
