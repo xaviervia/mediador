@@ -1,7 +1,7 @@
 {
   "name": "mediador",
   "version": "0.1.2",
-  "description": "EventEmitter look alike built as a mixin, with and bulk listener setup support",
+  "description": "EventEmitter look alike built as a mixin, with bulk listener setup support",
   "main": "mediador.js",
   "scripts": {
     "test": "coffee spec.coffee"
