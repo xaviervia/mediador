@@ -21,7 +21,7 @@ spec "Calls listeners subscribed to it. Chainable", ->
   # then chainable
   assert result is venue
 
-  # when 
+  # when
   result = venue.emit "fire", ["text"]
 
   # then emitted
@@ -42,7 +42,7 @@ spec "Removes listeners", ->
     spy.called = true
     spy.arg    = arg
 
-  # when 
+  # when
   venue.on "fire", spy
   result = venue.off "fire", spy
 
@@ -59,7 +59,7 @@ spec "Removes listeners", ->
 
 spec "Subscribes a listener set", ->
   # given
-  set = 
+  set =
     action: (arg)->
       set.action.called   = true
       set.action.arg      = arg
@@ -88,7 +88,7 @@ spec "Subscribes a listener set", ->
 
 spec "Unsubscribes a listener set", ->
   # given
-  set = 
+  set =
     action: ->
       set.action.called   = true
     reaction: ->
@@ -141,7 +141,7 @@ spec "Works even when no comprehensions are available", ->
   hijacked = {}
   hijacked.forEach = Array::forEach
   hijacked.filter  = Array::filter
-  hijacked.map     = Array::map   
+  hijacked.map     = Array::map
   Array::forEach   = null
   Array::filter    = null
   Array::map       = null
@@ -177,7 +177,7 @@ spec "Allows setting 'this' with an argument", ->
   mediador = new Mediador
   mediador.on "event", ->
       assert @ is scope
-      scope.callback = true 
+      scope.callback = true
     , scope
 
   # when
@@ -190,7 +190,7 @@ spec "Allows setting 'this' with an argument", ->
 
 spec "Respects the original 'this' in listener sets", ->
   # given
-  hash            = 
+  hash            =
     event: ->
       hash.event.called = true
       assert @ is hash
@@ -208,12 +208,5 @@ spec "Respects the original 'this' in listener sets", ->
 
 
 spec "Doesn't hangs if the listener does not exist"
-
-spec "Supports using objets with 'name' property as events"
-
-spec "Emits synchronously by default"
-
-spec "Emits asynchronously if instructed to"
-
 
 spec.go()
