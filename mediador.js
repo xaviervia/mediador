@@ -14,7 +14,7 @@
 //
 // ### Browser and RequireJS
 //
-// Mediador is also available for the browser and 
+// Mediador is also available for the browser and
 // [RequireJS](http://requirejs.org/). You can install it with `bower`.
 //
 // ```
@@ -23,7 +23,7 @@
 //
 // Usage
 // -----
-// 
+//
 // ### Instance
 //
 // `emit` maps each element in the second argument array as an argument to
@@ -61,18 +61,18 @@
 //
 // The simplest way to use Mediador is to make instances, but it is not the
 // recommended way.
-// 
+//
 // Mediador is a [**mixin**](https://en.wikipedia.org/wiki/Mixin). The idea is
 // that you can add its methods to the prototypes or objects that you want to
 // amplify with events, without having to make them inherit directly from
 // Mediador.
 //
-// The events are stored in the `listeners` property within the emitter 
+// The events are stored in the `listeners` property within the emitter
 // object, in this case `yourInstance`.
 //
 // Bear this in mind so to not accidentally override the property.
 //
-// You can find these examples in the [`examples`](examples) folder in this 
+// You can find these examples in the [`examples`](examples) folder in this
 // repo. You can run them without installing `mediador` by running `npm link`
 // on the repo folder (may require `sudo`).
 //
@@ -123,13 +123,13 @@
 // as the last argument.
 //
 // This is crucial, because otherwise in the contexts of many listeners there
-// would be no available references to the emitter–the emitter would be 
-// unreachable. The emitter is needed for listeners to be able to emit 
-// further events in it–in fact, that might be the only way for a listener to 
+// would be no available references to the emitter–the emitter would be
+// unreachable. The emitter is needed for listeners to be able to emit
+// further events in it–in fact, that might be the only way for a listener to
 // pass information forward.
 //
 // > Another strategy to make the emitter available for the listeners would be
-// > to bind the listener to `this`, `this` being the emitter object. I 
+// > to bind the listener to `this`, `this` being the emitter object. I
 // > really don't like when libraries do that.
 //
 // ```javascript
@@ -209,7 +209,7 @@
 //    object?
 // 2. Will you gladly use a library that extends your object blindfolded and
 //    risk name collision anyways?
-// 3. Why closing the door to interacting with the properties set by the 
+// 3. Why closing the door to interacting with the properties set by the
 //    library? You may very well wish to modify or query the `listeners` set.
 //
 // In other words, I consider that using lightly a library _that extends your
@@ -237,17 +237,17 @@
 "use strict";
 
 (function (name, definition) {
-  
+
   //! AMD
-  if (typeof define === 'function') 
+  if (typeof define === 'function')
     define(definition)
 
   //! Node.js
-  else if (typeof module !== 'undefined' && module.exports) 
+  else if (typeof module !== 'undefined' && module.exports)
     module.exports = definition()
-  
+
   //! Browser
-  else { 
+  else {
     var theModule = definition(), global = window, old = global[name];
 
     theModule.noConflict = function () {
@@ -298,7 +298,7 @@
   // the effect will be the same as if `on` had been called with `('hear',
   // function (...) {...})` and `('see', function (...) {...})`.
   //
-  // Once called, the listeners will always be invoked with the original 
+  // Once called, the listeners will always be invoked with the original
   // object as `this`.
   //
   // Chainable.
@@ -341,7 +341,7 @@
         //! Store the callback
         this.listeners[event].push({
           callback: callback,
-          scope: scope 
+          scope: scope
         })
 
     }
@@ -374,11 +374,11 @@
     if (this.listeners && this.listeners instanceof Object &&
 
         //! ...and there is an array for the event
-        this.listeners[event] instanceof Array) 
+        this.listeners[event] instanceof Array)
 
         //! Iterate the listeners
         for (var index in this.listeners[event])
-          
+
           //! ...and run 'em!
           this.listeners[event][index].callback
             .apply(this.listeners[event][index].scope, (args ? args : []).concat([this]))
@@ -451,16 +451,17 @@
     //! If there is a callback this is removing a single event listener
     else
 
-      //! You can't be to careful. Check that everything is in place.
+      //! Check that everything is in place.
       if (this.listeners && this.listeners instanceof Object &&
-          this.listeners[event] instanceof Array) {
+          this.listeners[event] instanceof Array &&
+          this.listeners[event].length > 0) {
 
-          //! Filter out the callback in an extremely painful way due to IE 8
+          //! Filter out the callback in an extremely painful way due to IE 8-
           var iterator  = 0
           var index     = null
           var max       = this.listeners[event].length
 
-          while (index === null || iterator < max) {
+          while (index === null && iterator < max) {
 
             if (this.listeners[event][iterator].callback === callback)
               index = iterator
@@ -468,18 +469,22 @@
             iterator ++
           }
 
-          this.listeners[event].splice(index, 1)
+          //! Maybe the callback wasn't there in the first place
+          if (index !== null)
+
+            //! If the callback was found, remove it.
+            this.listeners[event].splice(index, 1)
 
       }
 
     //! Returns this for chainability
     return this
 
-  } 
+  }
 
   //! return Mediador
   return Mediador
- 
+
 })
 // Testing
 // -------
