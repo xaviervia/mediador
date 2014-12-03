@@ -482,6 +482,57 @@
 
   }
 
+
+  // Mediador.Subscription
+  // ---------------------
+  //
+  // **Mediador.Subscription** is the default subscription object for Mediador.
+  // Mediador con be configured to use different subcription objects as long
+  // as they expose the same interface:
+  //
+  // - `new <subscription>(endpoint, callback, context)`:
+  //   - the `endpoint` is the object that represents the type of events to
+  //     which this subscription is bound. In the default subscription the
+  //     `endpoint` is always of type `String`, but it can be anything in other
+  //     implementations.
+  //   - the `callback` is a `Function` that will be executed then the
+  //     subscription is invoked.
+  //   - the `context` is an object that will be used as `this` when running the
+  //     `callback`.
+  Mediador.Subscription = function (endpoint, callback, context) {
+    this.endpoint = endpoint
+    this.callback = callback
+    this.context  = context
+  }
+
+
+  // - `.notify(event, arguments) : Boolean`:
+  //   - the subscription object should contain a method called `notify` that
+  //     receives an `event` of the appropiate type as the first argument
+  //     (type `String` in the default Subscription) and an `Array` of arguments
+  //     as the second argument. The Subscription object is responsible of
+  //     matching the event to it's own endpoint to find out whether it should
+  //     invoke the callback or not. The notify event should return a Boolean
+  //     with the result of the matching: `true` if the callback was fired,
+  //     `false` if not.
+  Mediador.Subscription.prototype.notify = function (event, args) {
+    if (this.endpoint !== event) return false
+
+    this.callback.apply(this.context, args)
+    return true
+  }
+
+  // - `.match(event, callback) : Boolean`:
+  //   - the subscription object should also contain a method called `match` that
+  //     returns whether or not the subscription matches the `event`/`callback`
+  //     pair sent. It returns a Boolean. This method is used by the venue to
+  //     be able to detach subscriptions while delegating the matching procedure
+  //     to the subscription object.
+  Mediador.Subscription.prototype.match = function (event, callback) {
+    return this.endpoint === event &&
+      this.callback === callback
+  }
+
   //! return Mediador
   return Mediador
 

@@ -1,6 +1,6 @@
 spec       = require "washington"
 assert     = require "assert"
-Mediador   = require "./mediador"
+Mediador   = require "../mediador"
 
 
 
@@ -216,14 +216,3 @@ spec "Doesn't hang if the listener does not exist", ->
 
   # when
   venue.off "event", ->
-
-
-
-spec "Use proper Subscription objects", ->
-  console.log "To be able to override 'emit' in Opera House"
-
-  throw new Error "pending"
-
-
-
-spec.go()
