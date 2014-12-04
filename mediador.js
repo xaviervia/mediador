@@ -265,11 +265,14 @@
   // Mediador.prototype.on
   // ---------------------
   //
-  // ### on( event, callback, scope )
+  // ### on( event, callback, context [, subscription] )
   //
   // Stores the `callback` function as a listener for the specified `event`.
   // If the callback was already present, does nothing.
-  // Sets the `scope` as `this` for the callback when invoked.
+  // Sets the `context` as `this` for the callback when invoked.
+  //
+  // If provided, the subscription function will be used to create the instances.
+  // Otherwise the property called `Subscription` will be used.
   //
   // Chainable.
   //
@@ -277,7 +280,8 @@
   //
   // - `String` event
   // - `Function` callback
-  // - `Object` scope
+  // - `Object` context
+  // - _optional_ `Function` subscription
   //
   // #### Returns
   //
@@ -506,7 +510,7 @@
   }
 
 
-  // - `.notify(event, arguments) : Boolean`:
+  // - `.notify(event, arguments [, venue]) : Boolean`:
   //   - the subscription object should contain a method called `notify` that
   //     receives an `event` of the appropiate type as the first argument
   //     (type `String` in the default Subscription) and an `Array` of arguments
@@ -515,10 +519,12 @@
   //     invoke the callback or not. The notify event should return a Boolean
   //     with the result of the matching: `true` if the callback was fired,
   //     `false` if not.
-  Mediador.Subscription.prototype.notify = function (event, args) {
+  //     The `venue` is an optional argument that in the default Subscription
+  //     object is forwarded as the last argument to the callback.
+  Mediador.Subscription.prototype.notify = function (event, args, venue) {
     if (this.endpoint !== event) return false
 
-    this.callback.apply(this.context, args)
+    this.callback.apply(this.context, (args || []).concat([venue]))
     return true
   }
 
