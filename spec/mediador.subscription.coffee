@@ -3,7 +3,7 @@ assert  = require 'assert'
 
 Subscription = require('../mediador').Subscription
 
-spec "Takes the endpoint, callback and context as arguments", ->
+spec "new: Takes the endpoint, callback and context as arguments", ->
   # given
   endpoint = {}
   callback = {}
@@ -19,7 +19,7 @@ spec "Takes the endpoint, callback and context as arguments", ->
 
 
 
-spec "Matches when the same endpoint and callback are sent", ->
+spec "#match: Matches when the same endpoint and callback are sent", ->
   # given
   endpoint = {}
   callback = {}
@@ -31,7 +31,7 @@ spec "Matches when the same endpoint and callback are sent", ->
 
 
 
-spec "Doesn't match when endpoint is the same but callback not", ->
+spec "#match: Doesn't match when endpoint is the same but callback not", ->
   # given
   endpoint = {}
   callback = {}
@@ -43,7 +43,7 @@ spec "Doesn't match when endpoint is the same but callback not", ->
 
 
 
-spec "Doesn't match when callback is the same but endpoint not", ->
+spec "#match: Doesn't match when callback is the same but endpoint not", ->
   # given
   endpoint = {}
   callback = {}
@@ -55,7 +55,7 @@ spec "Doesn't match when callback is the same but endpoint not", ->
 
 
 
-spec "Fires the callback when notified with the proper event", ->
+spec "#notify: Fires the callback when notified with the proper event", ->
   # given
   endpoint = 'name'
   callback = ->
@@ -71,7 +71,7 @@ spec "Fires the callback when notified with the proper event", ->
 
 
 
-spec "Doesn't fire the callback when the event doesn't match", ->
+spec "#notify: Doesn't fire the callback when the event doesn't match", ->
   # given
   endpoint = 'name'
   callback = ->
@@ -87,7 +87,7 @@ spec "Doesn't fire the callback when the event doesn't match", ->
 
 
 
-spec "Returns true when fired", ->
+spec "#notify: Returns true when fired", ->
   # given
   endpoint = 'name'
   callback = ->
@@ -99,7 +99,7 @@ spec "Returns true when fired", ->
 
 
 
-spec "Returns false when not fired", ->
+spec "#notify: Returns false when not fired", ->
   # given
   endpoint = 'name'
   callback = ->
@@ -111,7 +111,7 @@ spec "Returns false when not fired", ->
 
 
 
-spec "Sends the arguments to the callback when firing", ->
+spec "#notify: Sends the arguments to the callback when firing", ->
   # given
   callback = ->
     callback.called = arguments
@@ -127,7 +127,7 @@ spec "Sends the arguments to the callback when firing", ->
 
 
 
-spec "Uses the context as `this` for the callback", ->
+spec "#notify: Uses the context as `this` for the callback", ->
   # given
   context = {}
   callback = ->
@@ -142,7 +142,7 @@ spec "Uses the context as `this` for the callback", ->
 
 
 
-spec "Sends the venue as the last argument to the callback", ->
+spec "#notify: Sends the venue as the last argument to the callback", ->
   # given
   context = {}
   callback = ->

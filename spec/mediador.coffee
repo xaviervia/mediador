@@ -3,7 +3,17 @@ assert     = require "assert"
 Mediador   = require "../mediador"
 
 
-spec "on: Creates the Subscription with the arguments #new", ->
+spec ".getSubscriptionClassFor: Return Subscription when null @subscriptions"
+
+spec ".getSubscriptionClassFor: Return corresponding object @subscriptions"
+
+spec ".setSubscriptionClassFor: Map to provided object @subscriptions"
+
+spec ".setSubscriptionClassFor: Replace default (null) when passing null @subscriptions"
+
+spec ".createSubscriptionFor: Instantiate corresponding class passing args @subscriptions"
+
+spec "#on: Creates the Subscription with the arguments @newAPI", ->
   # given
   endpoint = name: 'event'
   callback = name: 'callback'
@@ -21,14 +31,16 @@ spec "on: Creates the Subscription with the arguments #new", ->
   assert.equal venue.subscriptions[0].context, context
 
 
-spec "on: Uses the Subscription class from the venue #new"
+spec "#on: Uses the Subscription class for this if available @newAPI"
 
-spec "on: Uses the default Subscription class from Mediador if nothing else found #new"
+spec "#on: Uses the Subscription class for prototype of this if available @newAPI"
 
-spec "off: Removes a Subscription that matches the arguments#new"
+spec "#on: Uses the default Subscription (null) class from Mediador @newAPI"
 
-spec "on: Creates using properties as events, methods as callback and #set as context #new"
+spec "#off: Removes a Subscription that matches the arguments @newAPI"
 
-spec "off: Removes using properties as event, methods as callback #set #new"
+spec "#on: Creates using properties as events, methods as callback and @set as context @newAPI"
 
-spec "emit: Notifies every subscription, passes the args and venue #new"
+spec "#off: Removes using properties as event, methods as callback @set @newAPI"
+
+spec "#emit: Notifies every subscription, passes the args and venue @newAPI"

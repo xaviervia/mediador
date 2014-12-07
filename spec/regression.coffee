@@ -4,7 +4,7 @@ Mediador   = require "../mediador"
 
 
 
-spec "Calls listeners subscribed to it. Chainable", ->
+spec "Calls listeners subscribed to it. Chainable @regression", ->
   # given
   venue         = {}
   venue.on      = Mediador::on
@@ -30,7 +30,7 @@ spec "Calls listeners subscribed to it. Chainable", ->
 
 
 
-spec "Removes listeners", ->
+spec "Removes listeners @regression", ->
   # given
   venue         = {}
   venue.on      = Mediador::on
@@ -57,7 +57,7 @@ spec "Removes listeners", ->
 
 
 
-spec "Subscribes a listener set", ->
+spec "Subscribes a listener set @regression", ->
   # given
   set =
     action: (arg)->
@@ -86,7 +86,7 @@ spec "Subscribes a listener set", ->
 
 
 
-spec "Unsubscribes a listener set", ->
+spec "Unsubscribes a listener set @regression", ->
   # given
   set =
     action: ->
@@ -112,7 +112,7 @@ spec "Unsubscribes a listener set", ->
 
 
 
-spec "Called listeners receive the venue as the last argument", ->
+spec "Called listeners receive the venue as the last argument @regression", ->
   # given
   spy = ->
     spy.last = spy.last or []
@@ -136,7 +136,7 @@ spec "Called listeners receive the venue as the last argument", ->
 
 
 
-spec "Works even when no comprehensions are available", ->
+spec "Works even when no comprehensions are available @regression", ->
   # given
   hijacked = {}
   hijacked.forEach = Array::forEach
@@ -171,7 +171,7 @@ spec "Works even when no comprehensions are available", ->
 
 
 
-spec "Allows setting 'this' with an argument", ->
+spec "Allows setting 'this' with an argument @regression", ->
   # given
   scope    = {}
   venue = new Mediador
@@ -188,7 +188,7 @@ spec "Allows setting 'this' with an argument", ->
 
 
 
-spec "Respects the original 'this' in listener sets", ->
+spec "Respects the original 'this' in listener sets @regression", ->
   # given
   hash            =
     event: ->
@@ -207,7 +207,7 @@ spec "Respects the original 'this' in listener sets", ->
 
 
 
-spec "Doesn't hang if the listener does not exist", ->
+spec "Doesn't hang if the listener does not exist @regression", ->
   # given
   venue = new Mediador
   set   =
