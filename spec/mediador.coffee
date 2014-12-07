@@ -4,13 +4,31 @@ Mediador   = require "../mediador"
 
 
 spec ".getSubscriptionClassFor: Return Subscription when null @subscriptions", ->
-  assert.equal Mediador.getSubscriptionFor(), Mediador.Subscription
+  assert.equal Mediador.getSubscriptionClassFor(), Mediador.Subscription
 
 
 
-spec ".getSubscriptionClassFor: Return corresponding object @subscriptions"
+spec ".getSubscriptionClassFor: Return corresponding object @subscriptions", ->
+  # given
+  object = {}
+  Class = ->
+  Mediador.registerSubscriptionClassFor object, Class
 
-spec ".registerSubscriptionClassFor: Map to provided object @subscriptions"
+  # when + then
+  assert.equal Mediador.getSubscriptionClassFor(object), Class
+
+
+
+spec ".registerSubscriptionClassFor: Map to provided object @subscriptions", ->
+  # given
+  object = {}
+  Class = ->
+  Mediador.registerSubscriptionClassFor object, Class
+
+  # when + then
+  assert.equal Mediador.getSubscriptionClassFor(object), Class
+
+  
 
 spec ".registerSubscriptionClassFor: Replace default (null) when passing null @subscriptions"
 
@@ -32,6 +50,7 @@ spec "#on: Creates the Subscription with the arguments @newAPI", ->
   assert.equal venue.subscriptions[0].endpoint, endpoint
   assert.equal venue.subscriptions[0].callback, callback
   assert.equal venue.subscriptions[0].context, context
+
 
 
 spec "#on: Uses the Subscription class for this if available @newAPI"

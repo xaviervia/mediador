@@ -350,18 +350,32 @@ Chainable.
 Mediador.getSubscriptionClassFor
 --------------------------------
 
-### getSubscriptionClassFor( object )
+### getSubscriptionClassFor( target )
 
 Returns the subscription class (`Function`) to be instantiated for the
-provided object.
+provided `target`.
 
 #### Arguments
 
-- `Object` object
+- `Object` target
 
 #### Returns
 
 - `Function` function
+
+Mediador.registerSubscriptionClassFor
+-------------------------------------
+
+### registerSubscriptionClassFor( target, subscriptionClass )
+
+Registers the passed `subscriptionClass` as to be used for the `target`.
+
+If the `target` is `null`, it overrides the default.
+
+#### Arguments
+
+- `Object` target
+- `Function` subscriptionClass
 
 Mediador.Subscription
 ---------------------

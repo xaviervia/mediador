@@ -494,19 +494,81 @@
   // Mediador.getSubscriptionClassFor
   // --------------------------------
   //
-  // ### getSubscriptionClassFor( object )
+  // ### getSubscriptionClassFor( target )
   //
   // Returns the subscription class (`Function`) to be instantiated for the
-  // provided object.
+  // provided `target`.
   //
   // #### Arguments
   //
-  // - `Object` object
+  // - `Object` target
   //
   // #### Returns
   //
   // - `Function` function
   //
+  Mediador.getSubscriptionClassFor = function (target) {
+    var i        = 0
+
+    //! Be defensive about the length of an Array that may not exist
+    var length   = Mediador.subscriptionClasses instanceof Array ?
+      Mediador.subscriptionClasses.length : 0
+
+    //! Iterate the subscriptionClasses
+    while (i < length) {
+      if (Mediador.subscriptionClasses[i].target === target)
+        return Mediador.subscriptionClasses[i].subscriptionClass
+
+      i ++
+    }
+
+  }
+
+  // Mediador.registerSubscriptionClassFor
+  // -------------------------------------
+  //
+  // ### registerSubscriptionClassFor( target, subscriptionClass )
+  //
+  // Registers the passed `subscriptionClass` as to be used for the `target`.
+  //
+  // If the `target` is `null`, it overrides the default.
+  //
+  // #### Arguments
+  //
+  // - `Object` target
+  // - `Function` subscriptionClass
+  //
+  Mediador.registerSubscriptionClassFor = function (target, subscriptionClass) {
+
+    //! Prepare a record with the target and the class
+    var record  = { target: target, subscriptionClass: subscriptionClass }
+    var i       = 0
+    var length  = undefined
+    var found   = false
+
+    //! Make sure that the subscriptionClasses property exists
+    Mediador.subscriptionClasses = Mediador.subscriptionClasses || []
+
+    //! Cache the length
+    length = Mediador.subscriptionClasses.length
+
+    //! Iterate the classes. Break if found
+    while (i < length && !found) {
+
+      //! If the target already has a class assigned, overwrite
+      if (Mediador.subscriptionClasses[i].target === target) {
+        Mediador.subscriptionClasses[i].subscriptionClass = subscriptionClass
+        found = true
+      }
+
+      i ++
+    }
+
+    //! If the target is new, add record
+    if (!found)
+      Mediador.subscriptionClasses.push(record)
+  }
+
 
 
   // Mediador.Subscription
@@ -561,7 +623,10 @@
       this.callback === callback
   }
 
-  //! return Mediador
+  //! Set Subscription as the default subscriptionClass
+  Mediador.registerSubscriptionClassFor(undefined, Mediador.Subscription)
+
+  //! Return Mediador
   return Mediador
 
 })
