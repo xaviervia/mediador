@@ -4,7 +4,8 @@
   "description": "EventEmitter look alike built as a mixin, with bulk listener setup support",
   "main": "mediador.js",
   "scripts": {
-    "test": "washington spec.js"
+    "test": "washington spec.js",
+    "doc": "locco --source=mediador.js --adapter=markdown --adapter-readme=mediador.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,8 @@
     "url": "https://github.com/xaviervia/mediador/issues"
   },
   "devDependencies": {
-    "washington": "0.4.3",
-    "coffee-script": "1.8.0"
+    "coffee-script": "1.8.0",
+    "locco": "^1.0.2",
+    "washington": "0.4.3"
   }
 }

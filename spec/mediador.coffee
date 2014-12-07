@@ -3,13 +3,16 @@ assert     = require "assert"
 Mediador   = require "../mediador"
 
 
-spec ".getSubscriptionClassFor: Return Subscription when null @subscriptions"
+spec ".getSubscriptionClassFor: Return Subscription when null @subscriptions", ->
+  assert.equal Mediador.getSubscriptionFor(), Mediador.Subscription
+
+
 
 spec ".getSubscriptionClassFor: Return corresponding object @subscriptions"
 
-spec ".setSubscriptionClassFor: Map to provided object @subscriptions"
+spec ".registerSubscriptionClassFor: Map to provided object @subscriptions"
 
-spec ".setSubscriptionClassFor: Replace default (null) when passing null @subscriptions"
+spec ".registerSubscriptionClassFor: Replace default (null) when passing null @subscriptions"
 
 spec ".createSubscriptionFor: Instantiate corresponding class passing args @subscriptions"
 

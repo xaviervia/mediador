@@ -14,7 +14,7 @@ npm install mediador --save
 
 ### Browser and RequireJS
 
-Mediador is also available for the browser and 
+Mediador is also available for the browser and
 [RequireJS](http://requirejs.org/). You can install it with `bower`.
 
 ```
@@ -67,10 +67,12 @@ that you can add its methods to the prototypes or objects that you want to
 amplify with events, without having to make them inherit directly from
 Mediador.
 
-The events are stored in the `listeners` property within the emitter object.
+The events are stored in the `listeners` property within the emitter
+object, in this case `yourInstance`.
+
 Bear this in mind so to not accidentally override the property.
 
-You can find these examples in the [`examples`](examples) folder in this 
+You can find these examples in the [`examples`](examples) folder in this
 repo. You can run them without installing `mediador` by running `npm link`
 on the repo folder (may require `sudo`).
 
@@ -121,13 +123,13 @@ The event emitter is always sent to the listener functions
 as the last argument.
 
 This is crucial, because otherwise in the contexts of many listeners there
-would be no available references to the emitter–the emitter would be 
-unreachable. The emitter is needed for listeners to be able to emit further
-events in it–in fact, that might be the only way for a listener to pass
-information forward.
+would be no available references to the emitter–the emitter would be
+unreachable. The emitter is needed for listeners to be able to emit
+further events in it–in fact, that might be the only way for a listener to
+pass information forward.
 
 > Another strategy to make the emitter available for the listeners would be
-> to bind the listener to `this`, `this` being the emitter object. I 
+> to bind the listener to `this`, `this` being the emitter object. I
 > really don't like when libraries do that.
 
 ```javascript
@@ -207,7 +209,7 @@ I don't favor this approach because:
    object?
 2. Will you gladly use a library that extends your object blindfolded and
    risk name collision anyways?
-3. Why closing the door to interacting with the properties set by the 
+3. Why closing the door to interacting with the properties set by the
    library? You may very well wish to modify or query the `listeners` set.
 
 In other words, I consider that using lightly a library _that extends your
@@ -230,15 +232,19 @@ mediador.on("fire", function notAnonymousAnymore() {
 ```
 
 > Corollary: EventEmitter's `once` method is not required. Keep your APIs
-> simple
+> simple.
 
 Mediador.prototype.on
 ---------------------
 
-### on( event, callback )
+### on( event, callback, context [, subscription] )
 
 Stores the `callback` function as a listener for the specified `event`.
 If the callback was already present, does nothing.
+Sets the `context` as `this` for the callback when invoked.
+
+If provided, the subscription function will be used to create the instances.
+Otherwise the property called `Subscription` will be used.
 
 Chainable.
 
@@ -246,6 +252,8 @@ Chainable.
 
 - `String` event
 - `Function` callback
+- `Object` context
+- _optional_ `Function` subscription
 
 #### Returns
 
@@ -266,6 +274,9 @@ respective events. For example, if `on` is called with the hash:
 the effect will be the same as if `on` had been called with `('hear',
 function (...) {...})` and `('see', function (...) {...})`.
 
+Once called, the listeners will always be invoked with the original
+object as `this`.
+
 Chainable.
 
 #### Arguments
@@ -275,9 +286,8 @@ Chainable.
 #### Returns
 
 - `Mediador` this
-
 Mediador.prototype.emit
------------------------
+--------------------------
 
 ### emit( event, args )
 
@@ -293,7 +303,6 @@ followed by the emitter itself.
 #### Returns
 
 - `Mediador` this
-
 Mediador.prototype.off
 ----------------------
 
@@ -338,16 +347,63 @@ Chainable.
 
 - `Mediador` this
 
+Mediador.getSubscriptionClassFor
+--------------------------------
+
+### getSubscriptionClassFor( object )
+
+Returns the subscription class (`Function`) to be instantiated for the
+provided object.
+
+#### Arguments
+
+- `Object` object
+
+#### Returns
+
+- `Function` function
+
+Mediador.Subscription
+---------------------
+
+**Mediador.Subscription** is the default subscription object for Mediador.
+Mediador con be configured to use different subcription objects as long
+as they expose the same interface:
+
+- `new <subscription>(endpoint, callback, context)`:
+  - the `endpoint` is the object that represents the type of events to
+    which this subscription is bound. In the default subscription the
+    `endpoint` is always of type `String`, but it can be anything in other
+    implementations.
+  - the `callback` is a `Function` that will be executed then the
+    subscription is invoked.
+  - the `context` is an object that will be used as `this` when running the
+    `callback`.
+- `.notify(event, arguments [, venue]) : Boolean`:
+  - the subscription object should contain a method called `notify` that
+    receives an `event` of the appropiate type as the first argument
+    (type `String` in the default Subscription) and an `Array` of arguments
+    as the second argument. The Subscription object is responsible of
+    matching the event to it's own endpoint to find out whether it should
+    invoke the callback or not. The notify event should return a Boolean
+    with the result of the matching: `true` if the callback was fired,
+    `false` if not.
+    The `venue` is an optional argument that in the default Subscription
+    object is forwarded as the last argument to the callback.
+- `.match(event, callback) : Boolean`:
+  - the subscription object should also contain a method called `match` that
+    returns whether or not the subscription matches the `event`/`callback`
+    pair sent. It returns a Boolean. This method is used by the venue to
+    be able to detach subscriptions while delegating the matching procedure
+    to the subscription object.
 Testing
 -------
-
-Tests require CoffeeScript. Install with `sudo npm install -g coffee-script`.
 
 Then clone the repo and run:
 
 ```
 > npm install
-> npm test
+> make test
 ```
 
 License

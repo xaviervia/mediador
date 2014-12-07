@@ -232,7 +232,8 @@
 // ```
 //
 // > Corollary: EventEmitter's `once` method is not required. Keep your APIs
-// > simple (KYAS?)
+// > simple.
+//
 
 "use strict";
 
@@ -435,6 +436,7 @@
   // #### Returns
   //
   // - `Mediador` this
+  //
   Mediador.prototype.off = function (event, callback) {
 
     //! If there is no callback assumed to be an eventHash
@@ -485,6 +487,26 @@
     return this
 
   }
+
+
+
+
+  // Mediador.getSubscriptionClassFor
+  // --------------------------------
+  //
+  // ### getSubscriptionClassFor( object )
+  //
+  // Returns the subscription class (`Function`) to be instantiated for the
+  // provided object.
+  //
+  // #### Arguments
+  //
+  // - `Object` object
+  //
+  // #### Returns
+  //
+  // - `Function` function
+  //
 
 
   // Mediador.Subscription
@@ -546,13 +568,11 @@
 // Testing
 // -------
 //
-// Tests require CoffeeScript. Install with `sudo npm install -g coffee-script`.
-//
 // Then clone the repo and run:
 //
 // ```
 // > npm install
-// > npm test
+// > make test
 // ```
 //
 // License
