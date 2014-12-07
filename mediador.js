@@ -570,6 +570,33 @@
   }
 
 
+  // Mediador.createSubscriptionFor
+  // ------------------------------
+  //
+  // ### createSubscriptionFor( target, endpoint, callback, context )
+  //
+  // Creates and returns a subscription from the class corresponding to the
+  // `target`, forwarding the `endpoint`, `callback` and `context` to the
+  // constructor.
+  //
+  // #### Arguments
+  //
+  // - `Object` target
+  // - `Object` endpoint
+  // - `Function` callback
+  // - `Object` object
+  //
+  // #### Returns
+  //
+  // - `Object` subscription
+  //
+  Mediador.createSubscriptionFor = function (target, endpoint, callback, context) {
+    return new (Mediador.getSubscriptionClassFor(target))(
+      endpoint, callback, context)
+  }
+
+
+
 
   // Mediador.Subscription
   // ---------------------

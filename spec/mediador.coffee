@@ -28,11 +28,37 @@ spec ".registerSubscriptionClassFor: Map to provided object @subscriptions", ->
   # when + then
   assert.equal Mediador.getSubscriptionClassFor(object), Class
 
-  
 
-spec ".registerSubscriptionClassFor: Replace default (null) when passing null @subscriptions"
 
-spec ".createSubscriptionFor: Instantiate corresponding class passing args @subscriptions"
+spec ".registerSubscriptionClassFor: Replace default (undefined) when passing undefined @subscriptions", ->
+  # when
+  Class = ->
+  Mediador.registerSubscriptionClassFor undefined, Class
+
+  # then
+  assert.equal Mediador.getSubscriptionClassFor(), Class
+
+  # rollback
+  Mediador.registerSubscriptionClassFor undefined, Mediador.Subscription
+
+
+
+spec ".createSubscriptionFor: Instantiate corresponding class passing args @subscriptions", ->
+  # given
+  Class = (@endpoint, @callback, @context) ->
+  object = {}
+  Mediador.registerSubscriptionClassFor object, Class
+
+  # when
+  subscription = Mediador.createSubscriptionFor object, 'endpoint', 'callback', 'context'
+
+  # then
+  assert subscription instanceof Class
+  assert.equal subscription.endpoint, 'endpoint'
+  assert.equal subscription.callback, 'callback'
+  assert.equal subscription.context, 'context'
+
+
 
 spec "#on: Creates the Subscription with the arguments @newAPI", ->
   # given
@@ -57,7 +83,7 @@ spec "#on: Uses the Subscription class for this if available @newAPI"
 
 spec "#on: Uses the Subscription class for prototype of this if available @newAPI"
 
-spec "#on: Uses the default Subscription (null) class from Mediador @newAPI"
+spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI"
 
 spec "#off: Removes a Subscription that matches the arguments @newAPI"
 
