@@ -303,6 +303,7 @@ followed by the emitter itself.
 #### Returns
 
 - `Mediador` this
+
 Mediador.prototype.off
 ----------------------
 
@@ -376,6 +377,26 @@ If the `target` is `null`, it overrides the default.
 
 - `Object` target
 - `Function` subscriptionClass
+
+Mediador.createSubscriptionFor
+------------------------------
+
+### createSubscriptionFor( target, endpoint, callback, context )
+
+Creates and returns a subscription from the class corresponding to the
+`target`, forwarding the `endpoint`, `callback` and `context` to the
+constructor.
+
+#### Arguments
+
+- `Object` target
+- `Object` endpoint
+- `Function` callback
+- `Object` object
+
+#### Returns
+
+- `Object` subscription
 
 Mediador.Subscription
 ---------------------

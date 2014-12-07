@@ -373,6 +373,7 @@
   // #### Returns
   //
   // - `Mediador` this
+  //
   Mediador.prototype.emit = function (event, args) {
 
     //! If there is a listeners hash
