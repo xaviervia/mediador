@@ -165,22 +165,22 @@
 //
 // var yourInstance = new YourClass()
 //
-// var listenerSet = {
+// var subscriptionSet = {
 //   event: function () {
 //     console.log("Called the event")
 //   }
 // }
 //
-// yourInstance.on(listenerSet)
+// yourInstance.on(subscriptionSet)
 //
 // yourInstance.emit("event")
 //
-// yourInstance.off(listenerSet)
+// yourInstance.off(subscriptionSet)
 // ```
 //
-// #### What is the `listenerSet`?
+// #### What is the `subscriptionSet`?
 //
-// **Mediador** introduces the concept of an `listenerSet`, that is just an
+// **Mediador** introduces the concept of an `subscriptionSet`, that is just an
 // object where every property method will be added as a listener in the
 // emitter. For example, if the set has a `read` method, its function will
 // be added as a listener for the `read` event in the emitter.
@@ -266,93 +266,101 @@
   // Mediador.prototype.on
   // ---------------------
   //
-  // ### on( event, callback, context [, subscription] )
+  // ### on( endpoint, callback [, context [, subscriptionClass ] ] )
   //
-  // Stores the `callback` function as a listener for the specified `event`.
-  // If the callback was already present, does nothing.
-  // Sets the `context` as `this` for the callback when invoked.
+  // Creates an stores a subscription object, passing the `endpoint`, `callback`
+  // and `context` to the subscription's constructor.
   //
-  // If provided, the subscription function will be used to create the instances.
-  // Otherwise the property called `Subscription` will be used.
+  // By default Mediador uses it's own Subscription type, which takes any kind
+  // of `endpoint` as argument and makes an equality comparison with the `event`
+  // to decide whether to emit itself or not. The most common use case of this
+  // Subscription type is to use `String`s as `endpoints` and `events`: used in
+  // that way, Mediador has close compatibility with Node's `EventEmitter`.
+  //
+  // The Subscription type can be overriden however, by calling
+  // `registerSubscription` in the Mediador instance or in the `prototype` of a
+  // Mediador descendant. Once overriden, the behaviour depends on the
+  // implementation of the registered type.
+  //
+  // If provided, the `subscriptionClass` function will be used to create the
+  // instances instead of searching for one for the current object or the parent.
   //
   // Chainable.
   //
   // #### Arguments
   //
-  // - `String` event
+  // - `String` endpoint
   // - `Function` callback
-  // - `Object` context
-  // - _optional_ `Function` subscription
+  // - _optional_ `Object` context
+  // - _optional_ `Function` subscriptionClass
   //
   // #### Returns
   //
   // - `Mediador` this
   //
-  // ### on( eventHash )
+  // ### on( subscriptionSet )
   //
-  // Binds all property methods of the `eventHash` as listeners in their
-  // respective events. For example, if `on` is called with the hash:
+  // If `on` is called with only one argument that is an object, the argument
+  // will be assumed to be a `subscriptionSet`. A `subscriptionSet` is a way to
+  // create subscriptions in bulk: each property of the set that has a `Function`
+  // as value will be used to create a subscription:
   //
-  // ```javascript
-  // {
-  //   hear: function (something) { console.log(something); },
-  //   see: function (something) { console.log(something); },
-  // }
-  // ```
+  // - The property name will be used as the `endpoint`
+  // - The `Function` will be used as the `callback`
+  // - The object itself will be used as context
   //
-  // the effect will be the same as if `on` had been called with `('hear',
-  // function (...) {...})` and `('see', function (...) {...})`.
-  //
-  // Once called, the listeners will always be invoked with the original
-  // object as `this`.
+  // The subscription type in usage should be capable of dealing with `String`
+  // endpoints, so this feature is not useful if the `Subscription` requires
+  // endpoints of a different type.
   //
   // Chainable.
   //
   // #### Arguments
   //
-  // - `Object` eventHash
+  // - `Object` subscriptionSet
   //
   // #### Returns
   //
   // - `Mediador` this
-  Mediador.prototype.on = function (event, callback, scope) {
+  //
+  Mediador.prototype.on = function (endpoint, callback, context, subscriptionClass) {
 
-    //! If no callback, event hash assumed
-    if (!callback)
+    //! Defensively create the subscriptions array
+    this.subscriptions = this.subscriptions || []
 
-      //! For each key in the hash
-      for (var key in event) {
+    //! If not subscriptionClass was provided,
+    subscriptionClass = subscriptionClass ||
 
-        //! If the property named with the key is a function...
-        if (event[key] instanceof Function)
+      //! use the one for this venue
+      Mediador.getSubscriptionClassFor(this) ||
 
-          //! add the function as a listener to the event named after the key
-          this.on(key, event[key], event)
+      //! or the one for this prototype
+      Mediador.getSubscriptionClassFor(this.__proto__) ||
 
-      }
+      //! or the default one
+      Mediador.getSubscriptionClassFor()
 
-    //! If there is a callback this is setting a single event listener
-    else {
-
-      //! Create the event listeners hash if there wasn't one
-      this.listeners = this.listeners || {}
-
-      //! Create the listeners array for the event if there wasn't one
-      this.listeners[event] = this.listeners[event] || []
-
-      //! If the given callback was not present
-      if (this.listeners[event].indexOf(callback) === -1)
-
-        //! Store the callback
-        this.listeners[event].push({
-          callback: callback,
-          scope: scope
-        })
-
-    }
+    //! Create the subscription and add it to the array
+    this.subscriptions.push(
+      new subscriptionClass(endpoint, callback, context) )
 
     //! Return this for chainability
     return this
+
+    //! //! If no callback, event hash assumed
+    //! if (!callback)
+    //!
+    //!   //! For each key in the hash
+    //!   for (var key in endpoint) {
+    //!
+    //!     //!! If the property named with the key is a function...
+    //!     if (endpoint[key] instanceof Function)
+    //!
+    //!       //!! add the function as a listener to the endpoint named after the key
+    //!       this.on(key, endpoint[key], endpoint)
+    //!
+    //!   }
+
 
   }
 

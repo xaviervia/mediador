@@ -3,12 +3,12 @@ assert     = require "assert"
 Mediador   = require "../mediador"
 
 
-spec ".getSubscriptionClassFor: Return Subscription when null @subscriptions", ->
+spec ".getSubscriptionClassFor: Return Subscription when null @registering", ->
   assert.equal Mediador.getSubscriptionClassFor(), Mediador.Subscription
 
 
 
-spec ".getSubscriptionClassFor: Return corresponding object @subscriptions", ->
+spec ".getSubscriptionClassFor: Return corresponding object @registering", ->
   # given
   object = {}
   Class = ->
@@ -19,7 +19,7 @@ spec ".getSubscriptionClassFor: Return corresponding object @subscriptions", ->
 
 
 
-spec ".registerSubscriptionClassFor: Map to provided object @subscriptions", ->
+spec ".registerSubscriptionClassFor: Map to provided object @registering", ->
   # given
   object = {}
   Class = ->
@@ -30,7 +30,7 @@ spec ".registerSubscriptionClassFor: Map to provided object @subscriptions", ->
 
 
 
-spec ".registerSubscriptionClassFor: Replace default (undefined) when passing undefined @subscriptions", ->
+spec ".registerSubscriptionClassFor: Replace default (undefined) when passing undefined @registering", ->
   # when
   Class = ->
   Mediador.registerSubscriptionClassFor undefined, Class
@@ -43,7 +43,7 @@ spec ".registerSubscriptionClassFor: Replace default (undefined) when passing un
 
 
 
-spec ".createSubscriptionFor: Instantiate corresponding class passing args @subscriptions", ->
+spec ".createSubscriptionFor: Instantiate corresponding class passing args @registering", ->
   # given
   Class = (@endpoint, @callback, @context) ->
   object = {}
@@ -57,6 +57,14 @@ spec ".createSubscriptionFor: Instantiate corresponding class passing args @subs
   assert.equal subscription.endpoint, 'endpoint'
   assert.equal subscription.callback, 'callback'
   assert.equal subscription.context, 'context'
+
+
+
+spec "#registerSubscription: Registers the class for the current object @registering"
+
+
+
+spec "#registerSubscription: Registers the class for the current prototype @registering"
 
 
 
@@ -79,11 +87,71 @@ spec "#on: Creates the Subscription with the arguments @newAPI", ->
 
 
 
-spec "#on: Uses the Subscription class for this if available @newAPI"
+spec "#on: Uses the Subscription class for this if available @newAPI", ->
+  # given
+  endpoint = name: 'event'
+  callback = name: 'callback'
+  context  = name: 'context'
+  subscription = (@endpoint, @callback, @context) ->
+  venue    = new Mediador
+  Mediador.registerSubscriptionClassFor venue, subscription
 
-spec "#on: Uses the Subscription class for prototype of this if available @newAPI"
+  # when
+  venue.on endpoint, callback, context
 
-spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI"
+  # then
+  assert venue.subscriptions[0] instanceof subscription
+  assert.equal venue.subscriptions[0].endpoint, endpoint
+  assert.equal venue.subscriptions[0].callback, callback
+  assert.equal venue.subscriptions[0].context, context
+
+
+
+spec "#on: Uses the Subscription class for prototype of this if available @newAPI", ->
+  # given
+  endpoint = name: 'event'
+  callback = name: 'callback'
+  context = name: 'context'
+  subscription = (@endpoint, @callback, @context) ->
+
+  Heir = ->
+  Heir.prototype = Object.create(Mediador.prototype)
+  venue    = new Heir()
+  Mediador.registerSubscriptionClassFor Heir.prototype, subscription
+
+  # when
+  venue.on endpoint, callback, context
+
+  # then
+  assert venue.subscriptions[0] instanceof subscription
+  assert.equal venue.subscriptions[0].endpoint, endpoint
+  assert.equal venue.subscriptions[0].callback, callback
+  assert.equal venue.subscriptions[0].context, context
+
+
+
+spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI", ->
+  # given
+  endpoint = name: 'event'
+  callback = name: 'callback'
+  context  = name: 'context'
+  venue    = new Mediador
+  subscription = (@endpoint, @callback, @context) ->
+  Mediador.registerSubscriptionClassFor undefined, subscription
+
+  # when
+  venue.on endpoint, callback, context
+
+  # then
+  assert venue.subscriptions[0] instanceof subscription
+  assert.equal venue.subscriptions[0].endpoint, endpoint
+  assert.equal venue.subscriptions[0].callback, callback
+  assert.equal venue.subscriptions[0].context, context
+
+  # restore
+  Mediador.registerSubscriptionClassFor undefined, Mediador.Subscription
+
+
 
 spec "#off: Removes a Subscription that matches the arguments @newAPI"
 
