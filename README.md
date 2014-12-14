@@ -240,8 +240,8 @@ Mediador.prototype.on
 
 ### on( endpoint, callback [, context [, subscriptionClass ] ] )
 
-Creates an stores a subscription object, passing the `endpoint`, `callback`
-and `context` to the subscription's constructor.
+Creates an stores a subscription object, passing the `endpoint`, `callback`,
+`context` and the current venue (`this`) to the subscription's constructor.
 
 By default Mediador uses it's own Subscription type, which takes any kind
 of `endpoint` as argument and makes an equality comparison with the `event`
@@ -333,10 +333,11 @@ provided arguments.
 If `subscriptionClass` is provided, it checks the type of the subscription
 and only if it matches, it passes all the other arguments to the `match`
 function. If no `subscriptionClass` is provided, it passes all arguments
-to `match`.
+to `match`. The venue itself (`this`) will also be passed to the `match`
+method, as the last argument.
 
 If `match` returns true, the subscription will be removed from the
-`subcriptions` `Array`.
+`subcriptions` `Array`. Any amount of subscriptions may be removed.
 
 Chainable.
 

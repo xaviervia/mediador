@@ -174,26 +174,43 @@ spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI
 
 
 
+spec "#on: Sends the venue to the subscription constructor @newAPI"
+
+
+
 spec "#off: Removes a Subscription that matches the arguments @newAPI", ->
   # given
   Sub = (@endpoint, @callback, @context) ->
-  Sub::match = -> true
+  Sub::match = ->
+    @match.called = arguments
+    true
+
   venue = new Mediador()
   venue.registerSubscription Sub
   venue.on "something", "not", "used"
+  subscription = venue.subscriptions[0]
 
   # when
   venue.off "won't", "be", "used"
 
   # then
   assert.equal venue.subscriptions.length, 0
-    
+  assert.equal subscription.match.called[0], "won't"
+  assert.equal subscription.match.called[1], "be"
+  assert.equal subscription.match.called[2], "used"
+  assert.equal subscription.match.called[3], venue
+
 
 
 spec "#off: Doesn't remove a Subscription that doesn't match @newAPI"
 
+spec "#off: Removes the subscription only if of the provided type @newAPI"
+
+spec "#off: Removes any amount of subscriptions @newAPI"
+
 spec "#on: Creates using properties as events, methods as callback and @set as context @newAPI"
 
 spec "#off: Removes using properties as event, methods as callback @set @newAPI"
+
 
 spec "#emit: Notifies every subscription, passes the args and venue @newAPI"

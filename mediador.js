@@ -269,8 +269,8 @@
   //
   // ### on( endpoint, callback [, context [, subscriptionClass ] ] )
   //
-  // Creates an stores a subscription object, passing the `endpoint`, `callback`
-  // and `context` to the subscription's constructor.
+  // Creates an stores a subscription object, passing the `endpoint`, `callback`,
+  // `context` and the current venue (`this`) to the subscription's constructor.
   //
   // By default Mediador uses it's own Subscription type, which takes any kind
   // of `endpoint` as argument and makes an equality comparison with the `event`
@@ -423,10 +423,11 @@
   // If `subscriptionClass` is provided, it checks the type of the subscription
   // and only if it matches, it passes all the other arguments to the `match`
   // function. If no `subscriptionClass` is provided, it passes all arguments
-  // to `match`.
+  // to `match`. The venue itself (`this`) will also be passed to the `match`
+  // method, as the last argument.
   //
   // If `match` returns true, the subscription will be removed from the
-  // `subcriptions` `Array`.
+  // `subcriptions` `Array`. Any amount of subscriptions may be removed.
   //
   // Chainable.
   //
@@ -466,7 +467,30 @@
   //
   // - `Mediador` this
   //
-  Mediador.prototype.off = function (event, callback) {
+  Mediador.prototype.off = function (endpoint, callback, context, subscriptionClass) {
+
+    //! Iterate the subscriptions
+    var index = 0
+    var length = this.subscriptions.length
+    var result = []
+    while (index < length) {
+
+      //! Send the arguments to the current subscription
+      if (!this.subscriptions[index].match(endpoint, callback, context, this))
+
+        //! If it doesn't match, adding to the results array
+        result.push(this.subscriptions[index])
+
+      index ++
+
+    }
+
+    //! Replace the subscriptions array with the filtered one
+    this.subscriptions = result
+
+    //! Chainability
+    return this
+
     //!
     //! //!! If there is no callback assumed to be an eventHash
     //! if (!callback) {
