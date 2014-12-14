@@ -161,7 +161,7 @@
 // var YourClass = function () {}
 // YourClass.prototype.on      = Mediador.prototype.on
 // YourClass.prototype.off     = Mediador.prototype.off
-// YourClass.prototype.emit = Mediador.prototype.emit
+// YourClass.prototype.emit    = Mediador.prototype.emit
 //
 // var yourInstance = new YourClass()
 //
@@ -189,20 +189,21 @@
 // **Mediador** provides support for both operations in the `on` and `off`
 // methods.
 //
-// ### Why does Mediador inserts the `listeners` property?
+// ### Why does Mediador inserts the `subscriptions` property?
 //
 // This is a question about namespace pollution.
 //
-// When you add a listener using the `on` method, Mediador adds the listener
-// function to the `listeners` property of the object, which will be _created_
-// if not present and used as it is if present. Mediador uses the `listeners`
-// property without checking for the property's type. The property may well
-// have been written by another function not related to Mediador. Is this OK?
+// When you add a subscription using the `on` method, Mediador adds the
+// subscription to the `subscriptions` property of the object, which will be
+// _created_ if not present and used as it is if present. Mediador uses the
+// `subscription` property without checking for the property's type. The
+// property may well have been written by another function not related to
+// Mediador. Is this OK?
 //
 // The thing is, there are several strategies to avoid name collision within an
 // object, and most of them involve encapsulating the library specific data
 // in a private data object or using some kind of namespace (such a as
-// naming the property `mediator_listeners` or `_listeners`).
+// naming the property `mediator_subscriptions` or `_subscriptions`).
 // I don't favor this approach because:
 //
 // 1. Are you really planning on using several event libraries on the same
@@ -210,7 +211,7 @@
 // 2. Will you gladly use a library that extends your object blindfolded and
 //    risk name collision anyways?
 // 3. Why closing the door to interacting with the properties set by the
-//    library? You may very well wish to modify or query the `listeners` set.
+//    library? You may very well wish to modify or query the `subscriptions` set.
 //
 // In other words, I consider that using lightly a library _that extends your
 // objects_ is a poor design choice. **Mediador** and other libraries of
@@ -307,7 +308,7 @@
   //
   // - The property name will be used as the `endpoint`
   // - The `Function` will be used as the `callback`
-  // - The object itself will be used as context
+  // - The object itself will be used as `context`
   //
   // The subscription type in usage should be capable of dealing with `String`
   // endpoints, so this feature is not useful if the `Subscription` requires
@@ -405,95 +406,114 @@
   // Mediador.prototype.off
   // ----------------------
   //
-  // ### off( event, callback )
+  // ### off( endpoint, callback [, context [, subscriptionClass ] ] )
   //
-  // Removes the `callback` function from the listener list to the `event`.
-  // Does nothing if the callback was not in the list.
+  // Removes the subscription that matches the provided `endpoint`, `callback`
+  // and, if provided, `context` and `subscriptionClass`. By default (using the
+  // default `Mediador.Subscription`) it removes the subscription which
+  // `endpoint` is equal to the provided one and has the same `context` and
+  // `callback`. The `endpoint` is typically a `String`, such as `"event"`, and
+  // consequently the behavior will be the same as Node `EventEmitter`'s. If
+  // the subscription class has been overrided, the behavior may vary.
+  //
+  // The `off` method relies on the subscription object's `match` method to
+  // decide whether or not there is a match between the subscription and the
+  // provided arguments.
+  //
+  // If `subscriptionClass` is provided, it checks the type of the subscription
+  // and only if it matches, it passes all the other arguments to the `match`
+  // function. If no `subscriptionClass` is provided, it passes all arguments
+  // to `match`.
+  //
+  // If `match` returns true, the subscription will be removed from the
+  // `subcriptions` `Array`.
   //
   // Chainable.
   //
   // #### Arguments
   //
-  // - `String` event
+  // - `Object` endpoint
   // - `Function` callback
+  // - _optional_ `Object` context
+  // - _optional_ `Function` subscriptionClass
   //
   // #### Returns
   //
   // - `Mediador` this
   //
-  // ### off( eventHash )
+  // ### off( subscriptionSet )
   //
-  // Releases all property methods of the `eventHash` from their
-  // respective events. For example, if `off` is called with the hash:
+  // If `off` is called with only one argument that is an object, the argument
+  // will be assumed to be a `subscriptionSet`. A `subscriptionSet` is a way to
+  // manage subscriptions in bulk: each property of the set that has a `Function`
+  // as value will be used by `off` to remove a subscription:
   //
-  // ```javascript
-  // {
-  //   hear: function (something) { console.log(something); },
-  //   see: function (something) { console.log(something); },
-  // }
-  // ```
+  // - The property name will be used as the `endpoint`
+  // - The `Function` will be used as the `callback`
+  // - The object itself will be used as `context`
   //
-  // the effect will be the same as if `off` had been called with `('hear',
-  // function (...) {...})` and `('see', function (...) {...})`.
+  // The subscription type in usage should be capable of dealing with `String`
+  // endpoints, so this feature is not useful if the `Subscription` requires
+  // endpoints of a different type.
   //
   // Chainable.
   //
   // #### Arguments
   //
-  // - `Object` eventHash
+  // - `Object` subscriptionSet
   //
   // #### Returns
   //
   // - `Mediador` this
   //
   Mediador.prototype.off = function (event, callback) {
-
-    //! If there is no callback assumed to be an eventHash
-    if (!callback) {
-
-      //! For each key in the hash
-      for (var key in event)
-
-        //! If the property named with the key is a function
-        if (event[key] instanceof Function)
-
-          //! ...remove the function from the listeners' list of the event
-          //! named after the key
-          this.off(key, event[key])
-
-    }
-
-    //! If there is a callback this is removing a single event listener
-    else
-
-      //! Check that everything is in place.
-      if (this.listeners && this.listeners instanceof Object &&
-          this.listeners[event] instanceof Array &&
-          this.listeners[event].length > 0) {
-
-          //! Filter out the callback in an extremely painful way due to IE 8-
-          var iterator  = 0
-          var index     = null
-          var max       = this.listeners[event].length
-
-          while (index === null && iterator < max) {
-
-            if (this.listeners[event][iterator].callback === callback)
-              index = iterator
-
-            iterator ++
-          }
-
-          //! Maybe the callback wasn't there in the first place
-          if (index !== null)
-
-            //! If the callback was found, remove it.
-            this.listeners[event].splice(index, 1)
-
-      }
-
-    //! Returns this for chainability
-    return this
+    //!
+    //! //!! If there is no callback assumed to be an eventHash
+    //! if (!callback) {
+    //!
+    //!   //!! For each key in the hash
+    //!   for (var key in event)
+    //!
+    //!     //!! If the property named with the key is a function
+    //!     if (event[key] instanceof Function)
+    //!
+    //!       //!! ...remove the function from the listeners' list of the event
+    //!       //!! named after the key
+    //!       this.off(key, event[key])
+    //!
+    //! }
+    //!
+    //! //!! If there is a callback this is removing a single event listener
+    //! else
+    //!
+    //!   //!! Check that everything is in place.
+    //!   if (this.listeners && this.listeners instanceof Object &&
+    //!       this.listeners[event] instanceof Array &&
+    //!       this.listeners[event].length > 0) {
+    //!
+    //!       //!! Filter out the callback in an extremely painful way due to IE 8-
+    //!       var iterator  = 0
+    //!       var index     = null
+    //!       var max       = this.listeners[event].length
+    //!
+    //!       while (index === null && iterator < max) {
+    //!
+    //!         if (this.listeners[event][iterator].callback === callback)
+    //!           index = iterator
+    //!
+    //!         iterator ++
+    //!       }
+    //!
+    //!       //!! Maybe the callback wasn't there in the first place
+    //!       if (index !== null)
+    //!
+    //!         //!! If the callback was found, remove it.
+    //!         this.listeners[event].splice(index, 1)
+    //!
+    //!   }
+    //!
+    //! //!! Returns this for chainability
+    //! return this
 
   }
 
@@ -522,7 +542,7 @@
 
     //! Chainability
     return this
-    
+
   }
 
 

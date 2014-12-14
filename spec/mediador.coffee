@@ -174,7 +174,23 @@ spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI
 
 
 
-spec "#off: Removes a Subscription that matches the arguments @newAPI"
+spec "#off: Removes a Subscription that matches the arguments @newAPI", ->
+  # given
+  Sub = (@endpoint, @callback, @context) ->
+  Sub::match = -> true
+  venue = new Mediador()
+  venue.registerSubscription Sub
+  venue.on "something", "not", "used"
+
+  # when
+  venue.off "won't", "be", "used"
+
+  # then
+  assert.equal venue.subscriptions.length, 0
+    
+
+
+spec "#off: Doesn't remove a Subscription that doesn't match @newAPI"
 
 spec "#on: Creates using properties as events, methods as callback and @set as context @newAPI"
 
