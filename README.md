@@ -356,6 +356,22 @@ Chainable.
 
 - `Mediador` this
 
+Mediador.prototype.registerSubscription
+---------------------------------------
+
+### registerSubscription( subscriptionClass )
+
+Registers the given subscription class as the one to be used with this
+object. Chainable
+
+#### Arguments
+
+- `Function` subscriptionClass
+
+#### Returns
+
+- `Mediador` this
+
 Mediador.getSubscriptionClassFor
 --------------------------------
 

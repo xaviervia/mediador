@@ -60,11 +60,32 @@ spec ".createSubscriptionFor: Instantiate corresponding class passing args @regi
 
 
 
-spec "#registerSubscription: Registers the class for the current object @registering"
+spec "#registerSubscription: Registers the class for the current object @registering", ->
+  # given
+  Class = (@endpoint, @callback, @context) ->
+  venue = new Mediador
+
+  # when
+  result = venue.registerSubscription Class
+
+  # then
+  assert.equal Mediador.getSubscriptionClassFor(venue), Class
+  assert.equal result, venue
 
 
 
-spec "#registerSubscription: Registers the class for the current prototype @registering"
+spec "#registerSubscription: Registers the class for the current prototype @registering", ->
+  # given
+  Class = (@endpoint, @callback, @context) ->
+  Heir = ->
+  Heir:: = Object.create Mediador::
+
+  # when
+  result = Heir::registerSubscription Class
+
+  # then
+  assert.equal Mediador.getSubscriptionClassFor(Heir::), Class
+  assert.equal result, Heir::
 
 
 
