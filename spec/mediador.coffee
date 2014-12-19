@@ -281,7 +281,35 @@ spec "#off: Removes any amount of subscriptions @newAPI", ->
 
 
 
-spec "#on: Creates using properties as events, methods as callback and @set as context @newAPI"
+spec "#on: Creates using properties as events, methods as callback and @set as context @newAPI", ->
+  # given
+  Subscription = (@endpoint, @callback, @context) ->
+  venue = new Mediador
+  venue.registerSubscription Subscription
+  subscriptionSet =
+    event: ->
+    property: 'not use'
+    otherMethod: ->
+
+  # when
+  venue.on subscriptionSet
+
+  # then
+  assert.equal venue.subscriptions.length, 2
+  eventSubscription = venue.subscriptions.filter((subscription) ->
+    subscription.endpoint is 'event'
+  )[0]
+  otherSubscription = venue.subscriptions.filter((subscription) ->
+    subscription.endpoint is 'otherMethod'
+  )[0]
+
+  assert.equal eventSubscription.callback, subscriptionSet.event
+  assert.equal eventSubscription.context, subscriptionSet
+
+  assert.equal otherSubscription.callback, subscriptionSet.otherMethod
+  assert.equal otherSubscription.context, subscriptionSet
+
+
 
 spec "#off: Removes using properties as event, methods as callback @set @newAPI"
 

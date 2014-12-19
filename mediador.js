@@ -326,42 +326,40 @@
   //
   Mediador.prototype.on = function (endpoint, callback, context, subscriptionClass) {
 
-    //! Defensively create the subscriptions array
-    this.subscriptions = this.subscriptions || []
+    //! If callback, register the subscription normally
+    if (callback) {
 
-    //! If not subscriptionClass was provided,
-    subscriptionClass = subscriptionClass ||
+      //! Defensively create the subscriptions array
+      this.subscriptions = this.subscriptions || []
 
+      //! If not subscriptionClass was provided,
       //! use the one for this venue
-      Mediador.getSubscriptionClassFor(this) ||
-
-      //! or the one for this prototype
-      Mediador.getSubscriptionClassFor(this.__proto__) ||
-
+      //! or the one for the prototype of this
       //! or the default one
-      Mediador.getSubscriptionClassFor()
+      subscriptionClass = subscriptionClass ||
+        Mediador.getSubscriptionClassFor(this) ||
+        Mediador.getSubscriptionClassFor(this.__proto__) ||
+        Mediador.getSubscriptionClassFor()
 
-    //! Create the subscription and add it to the array
-    this.subscriptions.push(
-      new subscriptionClass(endpoint, callback, context, this) )
+      //! Create the subscription and add it to the array
+      this.subscriptions.push(
+        new subscriptionClass(endpoint, callback, context, this) )
+
+    }
+
+    //! If there is no callback, treat the first argument as subscriptionsSet
+    else {
+
+      //! For each property which is a Function, create a subscription using
+      //! key as endpoint, method as callback and the set as context
+      for (var key in endpoint)
+        if (endpoint[key] instanceof Function)
+          this.on(key, endpoint[key], endpoint)
+
+    }
 
     //! Return this for chainability
     return this
-
-    //! //! If no callback, event hash assumed
-    //! if (!callback)
-    //!
-    //!   //! For each key in the hash
-    //!   for (var key in endpoint) {
-    //!
-    //!     //!! If the property named with the key is a function...
-    //!     if (endpoint[key] instanceof Function)
-    //!
-    //!       //!! add the function as a listener to the endpoint named after the key
-    //!       this.on(key, endpoint[key], endpoint)
-    //!
-    //!   }
-
 
   }
 
