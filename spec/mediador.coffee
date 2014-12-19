@@ -174,7 +174,20 @@ spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI
 
 
 
-spec "#on: Sends the venue to the subscription constructor @newAPI"
+spec "#on: Sends the venue to the subscription constructor @newAPI", ->
+  # given
+  endpoint = name: 'event'
+  callback = name: 'callback'
+  context  = name: 'context'
+  venue    = new Mediador
+  subscription = (@endpoint, @callback, @context, @venue) ->
+  Mediador.registerSubscriptionClassFor venue, subscription
+
+  # when
+  venue.on endpoint, callback, context
+
+  # then
+  assert.equal venue.subscriptions[0].venue, venue
 
 
 

@@ -343,7 +343,7 @@
 
     //! Create the subscription and add it to the array
     this.subscriptions.push(
-      new subscriptionClass(endpoint, callback, context) )
+      new subscriptionClass(endpoint, callback, context, this) )
 
     //! Return this for chainability
     return this
