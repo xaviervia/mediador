@@ -467,29 +467,44 @@
   //
   Mediador.prototype.off = function (endpoint, callback, context, subscriptionClass) {
 
-    //! Iterate the subscriptions
-    var index = 0
-    var length = this.subscriptions.length
-    var keep = []
-    while (index < length) {
+    //! If there is a callback, proceed normally
+    if (callback) {
 
-      //! If there is a subscriptionClass arguments and the current subscription
-      //! is of not of that type, add to keep directly
-      if (subscriptionClass && !(this.subscriptions[index] instanceof subscriptionClass))
-          keep.push(this.subscriptions[index])
+      //! Iterate the subscriptions
+      var index = 0
+      var length = this.subscriptions.length
+      var keep = []
+      while (index < length) {
 
-      //! Try to match the arguments to the current subscription, add to the keep
-      //! Array if it doesn't match
-      else
-        if (!this.subscriptions[index].match(endpoint, callback, context, this))
-          keep.push(this.subscriptions[index])
+        //! If there is a subscriptionClass arguments and the current subscription
+        //! is of not of that type, add to keep directly
+        if (subscriptionClass && !(this.subscriptions[index] instanceof subscriptionClass))
+            keep.push(this.subscriptions[index])
 
-      index ++
+        //! Try to match the arguments to the current subscription, add to the keep
+        //! Array if it doesn't match
+        else
+          if (!this.subscriptions[index].match(endpoint, callback, context, this))
+            keep.push(this.subscriptions[index])
+
+        index ++
+
+      }
+
+      //! Replace the subscriptions array with the filtered one
+      this.subscriptions = keep
 
     }
 
-    //! Replace the subscriptions array with the filtered one
-    this.subscriptions = keep
+    //! Otherwise, treat the first argument as a subscriptions set
+    else {
+
+      //! For each method of the subscriptions set, try to remove it
+      for (var key in endpoint)
+        if (endpoint[key])
+          this.off(key, endpoint[key], endpoint)
+
+    }
 
     //! Chainability
     return this

@@ -311,7 +311,25 @@ spec "#on: Creates using properties as events, methods as callback and @set as c
 
 
 
-spec "#off: Removes using properties as event, methods as callback @set @newAPI"
+spec "#off: Removes using properties as event, methods as callback @set @newAPI", ->
+  # given
+  subscriptionSet =
+    event: ->
+    method: ->
+  class Sub
+    constructor: (@endpoint, @callback, @context) ->
+    match: (endpoint, callback, context) ->
+      endpoint is @endpoint and callback is @callback and context is @context
+  venue = new Mediador
+  venue.on 'event', subscriptionSet.event, subscriptionSet, Sub
+  venue.on 'method', subscriptionSet.method, subscriptionSet, Sub
+
+  # when
+  venue.off subscriptionSet
+
+  # then
+  assert.equal venue.subscriptions.length, 0
+
 
 
 spec "#emit: Notifies every subscription, passes the args and venue @newAPI"
