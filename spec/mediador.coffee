@@ -261,7 +261,25 @@ spec "#off: Removes the subscription only if of the provided type @newAPI", ->
 
 
 
-spec "#off: Removes any amount of subscriptions @newAPI"
+spec "#off: Removes any amount of subscriptions @newAPI", ->
+  # given
+  class AlwaysTrue
+    match: -> true
+  class AlwaysFalse
+    match: -> false
+  venue = new Mediador
+  venue.on 'first', 'subscription', '', AlwaysTrue
+  venue.on 'second', 'subscription', '', AlwaysFalse
+  venue.on 'third', 'subscription', '', AlwaysTrue
+
+  # when
+  venue.off 'irrelevant'
+
+  # then
+  assert.equal venue.subscriptions.length, 1
+  assert venue.subscriptions[0] instanceof AlwaysFalse
+
+
 
 spec "#on: Creates using properties as events, methods as callback and @set as context @newAPI"
 
