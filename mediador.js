@@ -472,21 +472,26 @@
     //! Iterate the subscriptions
     var index = 0
     var length = this.subscriptions.length
-    var result = []
+    var keep = []
     while (index < length) {
 
-      //! Send the arguments to the current subscription
-      if (!this.subscriptions[index].match(endpoint, callback, context, this))
+      //! If there is a subscriptionClass arguments and the current subscription
+      //! is of not of that type, add to keep directly
+      if (subscriptionClass && !(this.subscriptions[index] instanceof subscriptionClass))
+          keep.push(this.subscriptions[index])
 
-        //! If it doesn't match, adding to the results array
-        result.push(this.subscriptions[index])
+      //! Try to match the arguments to the current subscription, add to the keep
+      //! Array if it doesn't match
+      else
+        if (!this.subscriptions[index].match(endpoint, callback, context, this))
+          keep.push(this.subscriptions[index])
 
       index ++
 
     }
 
     //! Replace the subscriptions array with the filtered one
-    this.subscriptions = result
+    this.subscriptions = keep
 
     //! Chainability
     return this

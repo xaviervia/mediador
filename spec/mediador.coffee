@@ -215,9 +215,51 @@ spec "#off: Removes a Subscription that matches the arguments @newAPI", ->
 
 
 
-spec "#off: Doesn't remove a Subscription that doesn't match @newAPI"
+spec "#off: Doesn't remove a Subscription that doesn't match @newAPI", ->
+  # given
+  class Sub
+    match: ->
+      @match.called = arguments
+      false
 
-spec "#off: Removes the subscription only if of the provided type @newAPI"
+  venue = new Mediador
+  venue.registerSubscription Sub
+  venue.on "something", "not", "used"
+  subscription = venue.subscriptions[0]
+
+  # when
+  venue.off "won't", "be", "used"
+
+  # then
+  assert.equal venue.subscriptions.length, 1
+  assert.equal subscription.match.called[0], "won't"
+  assert.equal subscription.match.called[1], "be"
+  assert.equal subscription.match.called[2], "used"
+  assert.equal subscription.match.called[3], venue
+
+
+
+spec "#off: Removes the subscription only if of the provided type @newAPI", ->
+  # given
+  class Sub
+    match: ->
+      @match.called = arguments
+      true
+
+  class WrongType
+
+  venue = new Mediador
+  venue.registerSubscription Sub
+  venue.on "something", "not", "used"
+  subscription = venue.subscriptions[0]
+
+  # when
+  venue.off "shouldn't", "be", "used", WrongType
+
+  # then
+  assert.equal venue.subscriptions.length, 1
+
+
 
 spec "#off: Removes any amount of subscriptions @newAPI"
 
