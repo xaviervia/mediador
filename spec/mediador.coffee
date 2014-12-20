@@ -332,4 +332,24 @@ spec "#off: Removes using properties as event, methods as callback @set @newAPI"
 
 
 
-spec "#emit: Notifies every subscription, passes the args and venue @newAPI"
+spec "#emit: Notifies every subscription, passes the args and venue @newAPI", ->
+  # given
+  class Sub
+    notify: ->
+      @notify.called = arguments
+  venue = new Mediador
+  venue.on "not", "to", "be", Sub
+  venue.on "more", "to", "do", Sub
+
+  # when
+  venue.emit 'arg', 'second arg', 'third arg'
+
+  # then
+  assert.equal venue.subscriptions[0].notify.called[0], 'arg'
+  assert.equal venue.subscriptions[0].notify.called[1], 'second arg'
+  assert.equal venue.subscriptions[0].notify.called[2], 'third arg'
+  assert.equal venue.subscriptions[0].notify.called[3], venue
+  assert.equal venue.subscriptions[1].notify.called[0], 'arg'
+  assert.equal venue.subscriptions[1].notify.called[1], 'second arg'
+  assert.equal venue.subscriptions[1].notify.called[2], 'third arg'
+  assert.equal venue.subscriptions[1].notify.called[3], venue

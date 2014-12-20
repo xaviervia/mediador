@@ -298,16 +298,20 @@ Chainable.
 Mediador.prototype.emit
 --------------------------
 
-### emit( event, args )
+### emit( args )
 
-Fires all the listener callbacks associated with the `event`. Chainable.
-The arguments for the listeners are each element within the `args` array,
-followed by the emitter itself.
+Notifies all the subscriptions about the emission. Each subscription may
+decide to fire the callback or not.
+
+To notify the subscriptions, is fires the `notify` method of the
+subscription passing all the `arguments` plus `this`, the venue, as the
+last argument.
+
+Chainable.
 
 #### Arguments
 
-- `String` event
-- `Array` args
+- `Object` _default arguments object_
 
 #### Returns
 

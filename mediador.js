@@ -366,35 +366,43 @@
   // Mediador.prototype.emit
   // --------------------------
   //
-  // ### emit( event, args )
+  // ### emit( args )
   //
-  // Fires all the listener callbacks associated with the `event`. Chainable.
-  // The arguments for the listeners are each element within the `args` array,
-  // followed by the emitter itself.
+  // Notifies all the subscriptions about the emission. Each subscription may
+  // decide to fire the callback or not.
+  //
+  // To notify the subscriptions, is fires the `notify` method of the
+  // subscription passing all the `arguments` plus `this`, the venue, as the
+  // last argument.
+  //
+  // Chainable.
   //
   // #### Arguments
   //
-  // - `String` event
-  // - `Array` args
+  // - `Object` _default arguments object_
   //
   // #### Returns
   //
   // - `Mediador` this
   //
-  Mediador.prototype.emit = function (event, args) {
+  Mediador.prototype.emit = function () {
+    var index, length, args;
 
-    //! If there is a listeners hash
-    if (this.listeners && this.listeners instanceof Object &&
+    //! Defensive reading of subscriptions
+    if (this.subscriptions && this.subscriptions instanceof Array) {
 
-        //! ...and there is an array for the event
-        this.listeners[event] instanceof Array)
+      //! Add this to the arguments array
+      args = []
+      for (index = 0, length = arguments.length; index < length; index ++)
+        args.push(arguments[index])
+      args.push(this)
 
-        //! Iterate the listeners
-        for (var index in this.listeners[event])
+      //! Iterate the subscriptions and notify them
+      for (index = 0, length = this.subscriptions.length;
+        index < length; index ++)
+        this.subscriptions[index].notify.apply(this.subscriptions[index], args)
 
-          //! ...and run 'em!
-          this.listeners[event][index].callback
-            .apply(this.listeners[event][index].scope, (args ? args : []).concat([this]))
+    }
 
     //! Return this for chainability
     return this
