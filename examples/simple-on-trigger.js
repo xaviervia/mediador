@@ -1,4 +1,4 @@
-var Mediador = require("mediador")
+var Mediador = require("../mediador")
 
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on

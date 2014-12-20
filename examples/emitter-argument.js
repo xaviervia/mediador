@@ -1,4 +1,4 @@
-var Mediador = require("mediador")
+var Mediador = require("../mediador")
 
 var YourClass = function () {}
 YourClass.prototype.on      = Mediador.prototype.on
@@ -8,7 +8,7 @@ YourClass.prototype.emit = Mediador.prototype.emit
 var yourInstance = new YourClass()
 
 yourInstance.on("completed", function () {
-  console.log("The 'event' was successfully emited and 'completed' too")
+  console.log("The 'event' was successfully emitted and 'completed' too")
 })
 
 yourInstance.on("event", function (irrelevant, emitter) {

@@ -1,4 +1,4 @@
-var Mediador = require("mediador")
+var Mediador = require("../mediador")
 
 var mediador = new Mediador
 
