@@ -155,3 +155,19 @@ spec "#notify: Sends the venue as the last argument to the callback", ->
 
   # then
   assert.equal callback.venue, venue
+
+
+
+spec "#notify: Doesn't fail there is venue but arguments are missing", ->
+  # given
+  context = {}
+  callback = ->
+    callback.venue = arguments[arguments.length - 1]
+  venue = {}
+  subscription = new Subscription 'name', callback, context
+
+  # when
+  subscription.notify 'name', venue
+
+  # then
+  assert.equal callback.venue, venue

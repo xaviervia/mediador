@@ -727,7 +727,7 @@
   }
 
 
-  // - `.notify(event, arguments [, venue]) : Boolean`:
+  // - `.notify(event [, arguments [, venue] ]) : Boolean`:
   //   - the subscription object should contain a method called `notify` that
   //     receives an `event` of the appropiate type as the first argument
   //     (type `String` in the default Subscription) and an `Array` of arguments
@@ -741,7 +741,12 @@
   Mediador.Subscription.prototype.notify = function (event, args, venue) {
     if (this.endpoint !== event) return false
 
-    this.callback.apply(this.context, (args || []).concat([venue]))
+    this.callback
+      .apply(
+        this.context,
+        (Object.prototype.toString.call(args) === '[object Array]' ? args : [])
+          .concat([arguments[arguments.length - 1]]))
+
     return true
   }
 
