@@ -25,6 +25,6 @@
   "devDependencies": {
     "coffee-script": "1.8.0",
     "locco": "^1.0.2",
-    "washington": "0.4.3"
+    "washington": "0.8.0"
   }
 }

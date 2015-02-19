@@ -1,5 +1,4 @@
 spec    = require 'washington'
-assert  = require 'assert'
 
 Subscription = require('../mediador').Subscription
 
@@ -13,9 +12,9 @@ spec "new: Takes the endpoint, callback and context as arguments", ->
   subscription = new Subscription endpoint, callback, context
 
   # then
-  assert.equal subscription.endpoint, endpoint
-  assert.equal subscription.callback, callback
-  assert.equal subscription.context, context
+  subscription.endpoint is endpoint
+  subscription.callback is callback
+  subscription.context is context
 
 
 
@@ -27,7 +26,7 @@ spec "#match: Matches when the same endpoint and callback are sent", ->
   subscription = new Subscription endpoint, callback, context
 
   # when / then
-  assert subscription.match endpoint, callback
+  subscription.match endpoint, callback
 
 
 
@@ -39,7 +38,7 @@ spec "#match: Doesn't match when endpoint is the same but callback not", ->
   subscription = new Subscription endpoint, callback, context
 
   # when / then
-  assert not subscription.match endpoint, {}
+  not subscription.match endpoint, {}
 
 
 
@@ -51,7 +50,7 @@ spec "#match: Doesn't match when callback is the same but endpoint not", ->
   subscription = new Subscription endpoint, callback, context
 
   # when / then
-  assert not subscription.match {}, callback
+  not subscription.match {}, callback
 
 
 
@@ -67,7 +66,7 @@ spec "#notify: Fires the callback when notified with the proper event", ->
   subscription.notify 'name'
 
   # then
-  assert callback.called
+  callback.called
 
 
 
@@ -83,7 +82,7 @@ spec "#notify: Doesn't fire the callback when the event doesn't match", ->
   subscription.notify 'mean'
 
   # then
-  assert not callback.called
+  not callback.called
 
 
 
@@ -95,7 +94,7 @@ spec "#notify: Returns true when fired", ->
   subscription = new Subscription endpoint, callback, context
 
   # when / then
-  assert subscription.notify 'name'
+  subscription.notify 'name'
 
 
 
@@ -107,7 +106,7 @@ spec "#notify: Returns false when not fired", ->
   subscription = new Subscription endpoint, callback, context
 
   # when / then
-  assert not subscription.notify 'mean'
+  not subscription.notify 'mean'
 
 
 
@@ -121,9 +120,9 @@ spec "#notify: Sends the arguments to the callback when firing", ->
   subscription.notify 'name', [1, 2, 'tre']
 
   # then
-  assert.equal callback.called[0], 1
-  assert.equal callback.called[1], 2
-  assert.equal callback.called[2], 'tre'
+  callback.called[0] is 1 and
+  callback.called[1] is 2 and
+  callback.called[2] is 'tre'
 
 
 
@@ -138,7 +137,7 @@ spec "#notify: Uses the context as `this` for the callback", ->
   subscription.notify 'name'
 
   # then
-  assert.equal callback.context, context
+  callback.context is context
 
 
 
@@ -154,7 +153,7 @@ spec "#notify: Sends the venue as the last argument to the callback", ->
   subscription.notify 'name', [], venue
 
   # then
-  assert.equal callback.venue, venue
+  callback.venue is venue
 
 
 
@@ -170,4 +169,4 @@ spec "#notify: Doesn't fail there is venue but arguments are missing", ->
   subscription.notify 'name', venue
 
   # then
-  assert.equal callback.venue, venue
+  callback.venue is venue

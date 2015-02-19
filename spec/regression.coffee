@@ -1,5 +1,4 @@
 spec       = require "washington"
-assert     = require "assert"
 Mediador   = require "../mediador"
 
 
@@ -12,21 +11,19 @@ spec "Calls listeners subscribed to it. Chainable @regression", ->
 
   # given
   spy          = (arg)->
-    spy.called = true
     spy.arg    = arg
 
   # when
   result = venue.on "fire", spy
 
   # then chainable
-  assert result is venue
+  throw Error "Should be chainable" unless result is venue
 
   # when
   result = venue.emit "fire", ["text"]
 
-  # then emitted
-  assert spy.called
-  assert spy.arg == "text"
+  # then
+  spy.arg is "text"
 
 
 
@@ -40,20 +37,19 @@ spec "Removes listeners @regression", ->
   # given
   spy          = (arg)->
     spy.called = true
-    spy.arg    = arg
 
   # when
   venue.on "fire", spy
   result = venue.off "fire", spy
 
   # then chainable
-  assert result is venue
+  throw Error "Should be chainable" unless result is venue
 
   # when
   venue.emit "fire", ["text"]
 
   # then unhooked
-  assert not spy.called
+  not spy.called
 
 
 
@@ -61,10 +57,8 @@ spec "Subscribes a listener set @regression", ->
   # given
   set =
     action: (arg)->
-      set.action.called   = true
       set.action.arg      = arg
     reaction: (arg)->
-      set.reaction.called = true
       set.reaction.arg    = arg
 
   # given
@@ -79,10 +73,8 @@ spec "Subscribes a listener set @regression", ->
   venue.emit 'reaction', ["react"]
 
   # then
-  assert set.action.called
-  assert set.action.arg == "act"
-  assert set.reaction.called
-  assert set.reaction.arg == "react"
+  set.action.arg is "act" and
+  set.reaction.arg is "react"
 
 
 
@@ -107,8 +99,7 @@ spec "Unsubscribes a listener set @regression", ->
   venue.emit 'reaction'
 
   # then
-  assert not set.action.called
-  assert not set.reaction.called
+  not set.action.called and not set.reaction.called
 
 
 
@@ -132,7 +123,7 @@ spec "Called listeners receive the venue as the last argument @regression", ->
   venue.emit "event"
 
   # then
-  assert arg is venue for arg in spy.last
+  arg is venue for arg in spy.last
 
 
 
@@ -176,7 +167,7 @@ spec "Allows setting 'this' with an argument @regression", ->
   scope    = {}
   venue = new Mediador
   venue.on "event", ->
-      assert @ is scope
+      throw Error "Should be scope" unless @ is scope
       scope.callback = true
     , scope
 
@@ -184,7 +175,7 @@ spec "Allows setting 'this' with an argument @regression", ->
   venue.emit "event"
 
   # then
-  assert scope.callback
+  scope.callback
 
 
 
@@ -193,7 +184,7 @@ spec "Respects the original 'this' in listener sets @regression", ->
   hash            =
     event: ->
       hash.event.called = true
-      assert @ is hash
+      throw Error "Should be hash" unless @ is hash
 
   # given
   venue           = new Mediador
@@ -203,7 +194,7 @@ spec "Respects the original 'this' in listener sets @regression", ->
   venue.emit "event"
 
   # then
-  assert hash.event.called
+  hash.event.called
 
 
 

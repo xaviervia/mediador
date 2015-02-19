@@ -1,10 +1,9 @@
 spec       = require "washington"
-assert     = require "assert"
 Mediador   = require "../mediador"
 
 
 spec ".getSubscriptionClassFor: Return Subscription when null @registering", ->
-  assert.equal Mediador.getSubscriptionClassFor(), Mediador.Subscription
+  Mediador.getSubscriptionClassFor() is Mediador.Subscription
 
 
 
@@ -15,7 +14,7 @@ spec ".getSubscriptionClassFor: Return corresponding object @registering", ->
   Mediador.registerSubscriptionClassFor object, Class
 
   # when + then
-  assert.equal Mediador.getSubscriptionClassFor(object), Class
+  Mediador.getSubscriptionClassFor(object) is Class
 
 
 
@@ -26,17 +25,17 @@ spec ".registerSubscriptionClassFor: Map to provided object @registering", ->
   Mediador.registerSubscriptionClassFor object, Class
 
   # when + then
-  assert.equal Mediador.getSubscriptionClassFor(object), Class
+  Mediador.getSubscriptionClassFor(object) is Class
 
 
 
-spec ".registerSubscriptionClassFor: Replace default (undefined) when passing undefined @registering", ->
+spec ".registerSubscriptionClassFor: Replace default (undefined) when passing undefined @registering", (check) ->
   # when
   Class = ->
   Mediador.registerSubscriptionClassFor undefined, Class
 
   # then
-  assert.equal Mediador.getSubscriptionClassFor(), Class
+  check Mediador.getSubscriptionClassFor() is Class
 
   # rollback
   Mediador.registerSubscriptionClassFor undefined, Mediador.Subscription
@@ -53,10 +52,10 @@ spec ".createSubscriptionFor: Instantiate corresponding class passing args @regi
   subscription = Mediador.createSubscriptionFor object, 'endpoint', 'callback', 'context'
 
   # then
-  assert subscription instanceof Class
-  assert.equal subscription.endpoint, 'endpoint'
-  assert.equal subscription.callback, 'callback'
-  assert.equal subscription.context, 'context'
+  subscription instanceof Class and
+  subscription.endpoint is 'endpoint' and
+  subscription.callback is 'callback' and
+  subscription.context is 'context'
 
 
 
@@ -69,8 +68,8 @@ spec "#registerSubscription: Registers the class for the current object @registe
   result = venue.registerSubscription Class
 
   # then
-  assert.equal Mediador.getSubscriptionClassFor(venue), Class
-  assert.equal result, venue
+  Mediador.getSubscriptionClassFor(venue) is Class and
+  result is venue
 
 
 
@@ -84,8 +83,8 @@ spec "#registerSubscription: Registers the class for the current prototype @regi
   result = Heir::registerSubscription Class
 
   # then
-  assert.equal Mediador.getSubscriptionClassFor(Heir::), Class
-  assert.equal result, Heir::
+  Mediador.getSubscriptionClassFor(Heir::) is Class and
+  result is Heir::
 
 
 
@@ -101,10 +100,10 @@ spec "#on: Creates the Subscription with the arguments @newAPI", ->
   venue.on endpoint, callback, context, subscription
 
   # then
-  assert venue.subscriptions[0] instanceof subscription
-  assert.equal venue.subscriptions[0].endpoint, endpoint
-  assert.equal venue.subscriptions[0].callback, callback
-  assert.equal venue.subscriptions[0].context, context
+  venue.subscriptions[0] instanceof subscription and
+  venue.subscriptions[0].endpoint is endpoint and
+  venue.subscriptions[0].callback is callback and
+  venue.subscriptions[0].context is context
 
 
 
@@ -121,10 +120,10 @@ spec "#on: Uses the Subscription class for this if available @newAPI", ->
   venue.on endpoint, callback, context
 
   # then
-  assert venue.subscriptions[0] instanceof subscription
-  assert.equal venue.subscriptions[0].endpoint, endpoint
-  assert.equal venue.subscriptions[0].callback, callback
-  assert.equal venue.subscriptions[0].context, context
+  venue.subscriptions[0] instanceof subscription and
+  venue.subscriptions[0].endpoint is endpoint and
+  venue.subscriptions[0].callback is callback and
+  venue.subscriptions[0].context is context
 
 
 
@@ -144,10 +143,10 @@ spec "#on: Uses the Subscription class for prototype of this if available @newAP
   venue.on endpoint, callback, context
 
   # then
-  assert venue.subscriptions[0] instanceof subscription
-  assert.equal venue.subscriptions[0].endpoint, endpoint
-  assert.equal venue.subscriptions[0].callback, callback
-  assert.equal venue.subscriptions[0].context, context
+  venue.subscriptions[0] instanceof subscription and
+  venue.subscriptions[0].endpoint is endpoint and
+  venue.subscriptions[0].callback is callback and
+  venue.subscriptions[0].context is context
 
 
 
@@ -164,10 +163,10 @@ spec "#on: Uses the default Subscription (undefined) class from Mediador @newAPI
   venue.on endpoint, callback, context
 
   # then
-  assert venue.subscriptions[0] instanceof subscription
-  assert.equal venue.subscriptions[0].endpoint, endpoint
-  assert.equal venue.subscriptions[0].callback, callback
-  assert.equal venue.subscriptions[0].context, context
+  venue.subscriptions[0] instanceof subscription and
+  venue.subscriptions[0].endpoint is endpoint and
+  venue.subscriptions[0].callback is callback and
+  venue.subscriptions[0].context is context
 
   # restore
   Mediador.registerSubscriptionClassFor undefined, Mediador.Subscription
@@ -187,7 +186,7 @@ spec "#on: Sends the venue to the subscription constructor @newAPI", ->
   venue.on endpoint, callback, context
 
   # then
-  assert.equal venue.subscriptions[0].venue, venue
+  venue.subscriptions[0].venue is venue
 
 
 
@@ -207,11 +206,11 @@ spec "#off: Removes a Subscription that matches the arguments @newAPI", ->
   venue.off "won't", "be", "used"
 
   # then
-  assert.equal venue.subscriptions.length, 0
-  assert.equal subscription.match.called[0], "won't"
-  assert.equal subscription.match.called[1], "be"
-  assert.equal subscription.match.called[2], "used"
-  assert.equal subscription.match.called[3], venue
+  venue.subscriptions.length is 0 and
+  subscription.match.called[0] is "won't" and
+  subscription.match.called[1] is "be" and
+  subscription.match.called[2] is "used" and
+  subscription.match.called[3] is venue
 
 
 
@@ -231,11 +230,11 @@ spec "#off: Doesn't remove a Subscription that doesn't match @newAPI", ->
   venue.off "won't", "be", "used"
 
   # then
-  assert.equal venue.subscriptions.length, 1
-  assert.equal subscription.match.called[0], "won't"
-  assert.equal subscription.match.called[1], "be"
-  assert.equal subscription.match.called[2], "used"
-  assert.equal subscription.match.called[3], venue
+  venue.subscriptions.length is 1 and
+  subscription.match.called[0] is "won't" and
+  subscription.match.called[1] is "be" and
+  subscription.match.called[2] is "used" and
+  subscription.match.called[3] is venue
 
 
 
@@ -257,7 +256,7 @@ spec "#off: Removes the subscription only if of the provided type @newAPI", ->
   venue.off "shouldn't", "be", "used", WrongType
 
   # then
-  assert.equal venue.subscriptions.length, 1
+  venue.subscriptions.length is 1
 
 
 
@@ -276,8 +275,8 @@ spec "#off: Removes any amount of subscriptions @newAPI", ->
   venue.off 'irrelevant'
 
   # then
-  assert.equal venue.subscriptions.length, 1
-  assert venue.subscriptions[0] instanceof AlwaysFalse
+  venue.subscriptions.length is 1 and
+  venue.subscriptions[0] instanceof AlwaysFalse
 
 
 
@@ -295,7 +294,7 @@ spec "#on: Creates using properties as events, methods as callback and @set as c
   venue.on subscriptionSet
 
   # then
-  assert.equal venue.subscriptions.length, 2
+  return "Should have been 2 subscriptions" unless venue.subscriptions.length is 2
   eventSubscription = venue.subscriptions.filter((subscription) ->
     subscription.endpoint is 'event'
   )[0]
@@ -303,11 +302,10 @@ spec "#on: Creates using properties as events, methods as callback and @set as c
     subscription.endpoint is 'otherMethod'
   )[0]
 
-  assert.equal eventSubscription.callback, subscriptionSet.event
-  assert.equal eventSubscription.context, subscriptionSet
-
-  assert.equal otherSubscription.callback, subscriptionSet.otherMethod
-  assert.equal otherSubscription.context, subscriptionSet
+  eventSubscription.callback is subscriptionSet.event and
+  eventSubscription.context is subscriptionSet and
+  otherSubscription.callback is subscriptionSet.otherMethod and
+  otherSubscription.context is subscriptionSet
 
 
 
@@ -328,7 +326,7 @@ spec "#off: Removes using properties as event, methods as callback @set @newAPI"
   venue.off subscriptionSet
 
   # then
-  assert.equal venue.subscriptions.length, 0
+  venue.subscriptions.length is 0
 
 
 
@@ -345,11 +343,11 @@ spec "#emit: Notifies every subscription, passes the args and venue @newAPI", ->
   venue.emit 'arg', 'second arg', 'third arg'
 
   # then
-  assert.equal venue.subscriptions[0].notify.called[0], 'arg'
-  assert.equal venue.subscriptions[0].notify.called[1], 'second arg'
-  assert.equal venue.subscriptions[0].notify.called[2], 'third arg'
-  assert.equal venue.subscriptions[0].notify.called[3], venue
-  assert.equal venue.subscriptions[1].notify.called[0], 'arg'
-  assert.equal venue.subscriptions[1].notify.called[1], 'second arg'
-  assert.equal venue.subscriptions[1].notify.called[2], 'third arg'
-  assert.equal venue.subscriptions[1].notify.called[3], venue
+  venue.subscriptions[0].notify.called[0] is 'arg' and
+  venue.subscriptions[0].notify.called[1] is 'second arg' and
+  venue.subscriptions[0].notify.called[2] is 'third arg' and
+  venue.subscriptions[0].notify.called[3] is venue and
+  venue.subscriptions[1].notify.called[0] is 'arg' and
+  venue.subscriptions[1].notify.called[1] is 'second arg' and
+  venue.subscriptions[1].notify.called[2] is 'third arg' and
+  venue.subscriptions[1].notify.called[3] is venue
